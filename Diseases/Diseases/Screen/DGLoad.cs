@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Diseases.Level
+namespace Diseases.Screen
 {
-    public class DGLevel
+    public class DGLoad
     {
-
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
@@ -12,6 +13,8 @@ namespace Diseases
         {
             using (DiseasesGame game = new DiseasesGame())
             {
+                Debug.WriteLine("game initialized", "INFO");
+
                 game.Run();
             }
         }
@@ -24,7 +27,6 @@ namespace Diseases
         public                  DiseasesGame    ()
         {
             this.graphicsManager = new GraphicsDeviceManager(this);
-
         }
 
         protected override void Dispose         (bool disposing)
@@ -33,6 +35,8 @@ namespace Diseases
         }
         protected override void Initialize      ()
         {
+            this.IsMouseVisible = true;
+
             base.Initialize();
         }
 
@@ -51,6 +55,8 @@ namespace Diseases
         }
         protected override void Draw            (GameTime gameTime)
         {
+            this.GraphicsDevice.Clear(Color.Black);
+
             base.Draw(gameTime);
         }
     }

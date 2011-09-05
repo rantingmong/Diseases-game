@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Diseases.Entity
+namespace Diseases.Screen.Menu
 {
-    public class DGEntityCellRed
+    public class DGMenuMain
     {
 
     }
