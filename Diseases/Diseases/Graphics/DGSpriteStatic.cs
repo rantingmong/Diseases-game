@@ -22,28 +22,28 @@ namespace Diseases.Graphics
             get { return this.texture; }
         }
 
-        Color tint;
+        Color tint = Color.White;
         public Color        Tint
         {
             get { return this.tint; }
             set { this.tint = value; }
         }
 
-        float rotation;
+        float rotation = 0;
         public float        Rotation
         {
             get { return this.rotation; }
             set { this.rotation = value; }
         }
 
-        Vector2 scale;
+        Vector2 scale = new Vector2(1, 1);
         public Vector2      Scale
         {
             get { return this.scale; }
             set { this.scale = value; }
         }
 
-        Vector2 location;
+        Vector2 location = Vector2.Zero;
         public Vector2      Location
         {
             get { return this.location; }

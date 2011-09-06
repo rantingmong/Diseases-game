@@ -33,7 +33,6 @@
     <Folder Include="Assets\Entities\" />
     <Folder Include="Assets\Fonts\" />
     <Folder Include="Assets\Shaders\" />
-    <Folder Include="Assets\Sounds\" />
     <Folder Include="Levels\" />
   </ItemGroup>
   <ItemGroup>
@@ -53,6 +52,13 @@
       <Name>load</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assets\Sounds\126 Pokemon Whistle.wav">
+      <Name>126 Pokemon Whistle</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

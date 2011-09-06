@@ -5,9 +5,13 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Audio;
+
 using Diseases.Screen;
+using Diseases.Graphics;
+
 using Diseases.Screen.Menu;
-using Diseases.Screen.Level;
 
 namespace Diseases
 {
@@ -26,14 +30,19 @@ namespace Diseases
 
     public class DiseasesGame : Game
     {
-        private bool                    gamecrashed = false;
+        private bool                    musicplayed     = false;
+        private bool                    gamecrashed     = false;
+
+        private SoundEffect             crashSound;
 
         private SpriteBatch             spriteBatch;
         private GraphicsDeviceManager   graphicsManager;
 
-        private Texture2D       crashTexture;
+        private DGSpriteStatic          crashSprite;
 
-        public                  DiseasesGame    ()
+        private DGScreenManager         screenmanager;
+
+        public                          DiseasesGame    ()
         {
             this.graphicsManager = new GraphicsDeviceManager(this);
 
@@ -41,33 +50,64 @@ namespace Diseases
             this.graphicsManager.PreferredBackBufferHeight = 540;
         }
 
-        protected override void Dispose         (bool disposing)
+        protected override void         Dispose         (bool disposing)
         {
             base.Dispose(disposing);
         }
-        protected override void Initialize      ()
+        protected override void         Initialize      ()
         {
-            this.IsMouseVisible = true;
+            try
+            {
+                this.IsMouseVisible = true;
+
+                this.crashSprite = new DGSpriteStatic("backgrounds/errr");
+                this.screenmanager = new DGScreenManager(this);
+
+                this.Components.Add(this.screenmanager);
+
+                this.screenmanager.AddScreen(new MenuMain(this.screenmanager));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message, "STOP");
+                Debug.WriteLine(ex.StackTrace, "STOP");
+
+                this.gamecrashed = true;
+            }
 
             base.Initialize();
         }
 
-        protected override void LoadContent     ()
+        protected override void         LoadContent     ()
         {
-            this.Content.RootDirectory = "Content/Assets";
+            try
+            {
+                this.Content.RootDirectory = "Content/Assets";
 
-            this.crashTexture = this.Content.Load<Texture2D>("backgrounds/errr");
+                this.crashSprite.LoadContent(this.Content);
+                this.crashSound = this.Content.Load<SoundEffect>("sounds/126 pokemon whistle");
 
-            this.spriteBatch = new SpriteBatch(this.GraphicsDevice);
+                this.spriteBatch = new SpriteBatch(this.GraphicsDevice);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message, "STOP");
+                Debug.WriteLine(ex.StackTrace, "STOP");
+
+                this.gamecrashed = true;
+            }
 
             base.LoadContent();
         }
-        protected override void UnloadContent   ()
+        protected override void         UnloadContent   ()
         {
+            this.crashSprite.UnloadContent();
+            this.crashSound.Dispose();
+
             base.UnloadContent();
         }
 
-        protected override void Update          (GameTime gameTime)
+        protected override void         Update          (GameTime gameTime)
         {
             if (!this.gamecrashed)
                 try
@@ -77,15 +117,23 @@ namespace Diseases
                 catch (Exception ex)
                 {
                     Debug.WriteLine(ex.Message, "STOP");
+                    Debug.WriteLine(ex.StackTrace, "STOP");
 
                     this.gamecrashed = true;
                 }
             else
             {
+                this.crashSprite.Update(gameTime);
 
+                if (!this.musicplayed)
+                {
+                    this.crashSound.Play();
+
+                    this.musicplayed = true;
+                }
             }
         }
-        protected override void Draw            (GameTime gameTime)
+        protected override void         Draw            (GameTime gameTime)
         {
             if (!this.gamecrashed)
             {
@@ -98,6 +146,7 @@ namespace Diseases
                 catch (Exception ex)
                 {
                     Debug.WriteLine(ex.Message, "STOP");
+                    Debug.WriteLine(ex.StackTrace, "STOP");
 
                     this.gamecrashed = true;
                 }
@@ -108,7 +157,7 @@ namespace Diseases
                 {
                     this.spriteBatch.Begin();
 
-                    this.spriteBatch.Draw(this.crashTexture, Vector2.Zero, Color.White);
+                    this.crashSprite.Render(this.spriteBatch);
 
                     this.spriteBatch.End();
                 }

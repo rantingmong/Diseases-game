@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 namespace Diseases.Entity
 {
-    public class DGPlayer
+    public class DGEntity
     {
+
     }
 }

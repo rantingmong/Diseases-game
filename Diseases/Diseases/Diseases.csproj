@@ -75,17 +75,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DiseasesGame.cs" />
-    <Compile Include="Entity\DGMatertial.cs" />
-    <Compile Include="Entity\DGPlayer.cs" />
+    <Compile Include="Entity\DGEntity.cs" />
     <Compile Include="Graphics\DGSpriteAnimate.cs" />
     <Compile Include="Graphics\DGSpriteStatic.cs" />
     <Compile Include="Graphics\Base\IDGSprite.cs" />
+    <Compile Include="Input\DGInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Screen\Base\DGScreen.cs" />
-    <Compile Include="Screen\DGLoad.cs" />
-    <Compile Include="Screen\DGPause.cs" />
-    <Compile Include="Screen\Level\DGLevel.cs" />
-    <Compile Include="Screen\Menu\DGMenu.cs" />
+    <Compile Include="Screen\DGScreen.cs" />
+    <Compile Include="Screen\DGScreenManager.cs" />
+    <Compile Include="Screen\Menu\MenuMain.cs" />
     <Compile Include="Util\DGHighScore.cs" />
     <Compile Include="Util\DGSettings.cs" />
   </ItemGroup>
