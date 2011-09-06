@@ -5,6 +5,10 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using Diseases.Screen;
+using Diseases.Screen.Menu;
+using Diseases.Screen.Level;
+
 namespace Diseases
 {
     public class Program
@@ -22,11 +26,19 @@ namespace Diseases
 
     public class DiseasesGame : Game
     {
-        private GraphicsDeviceManager graphicsManager;
+        private bool                    gamecrashed = false;
+
+        private SpriteBatch             spriteBatch;
+        private GraphicsDeviceManager   graphicsManager;
+
+        private Texture2D       crashTexture;
 
         public                  DiseasesGame    ()
         {
             this.graphicsManager = new GraphicsDeviceManager(this);
+
+            this.graphicsManager.PreferredBackBufferWidth = 800;
+            this.graphicsManager.PreferredBackBufferHeight = 540;
         }
 
         protected override void Dispose         (bool disposing)
@@ -42,6 +54,12 @@ namespace Diseases
 
         protected override void LoadContent     ()
         {
+            this.Content.RootDirectory = "Content/Assets";
+
+            this.crashTexture = this.Content.Load<Texture2D>("backgrounds/errr");
+
+            this.spriteBatch = new SpriteBatch(this.GraphicsDevice);
+
             base.LoadContent();
         }
         protected override void UnloadContent   ()
@@ -51,13 +69,54 @@ namespace Diseases
 
         protected override void Update          (GameTime gameTime)
         {
-            base.Update(gameTime);
+            if (!this.gamecrashed)
+                try
+                {
+                    base.Update(gameTime);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message, "STOP");
+
+                    this.gamecrashed = true;
+                }
+            else
+            {
+
+            }
         }
         protected override void Draw            (GameTime gameTime)
         {
-            this.GraphicsDevice.Clear(Color.Black);
+            if (!this.gamecrashed)
+            {
+                try
+                {
+                    this.GraphicsDevice.Clear(Color.Black);
 
-            base.Draw(gameTime);
+                    base.Draw(gameTime);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message, "STOP");
+
+                    this.gamecrashed = true;
+                }
+            }
+            else
+            {
+                try
+                {
+                    this.spriteBatch.Begin();
+
+                    this.spriteBatch.Draw(this.crashTexture, Vector2.Zero, Color.White);
+
+                    this.spriteBatch.End();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+            }
         }
     }
 }

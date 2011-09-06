@@ -75,7 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DiseasesGame.cs" />
-    <Compile Include="Entity\Base\IDGEntity.cs" />
+    <Compile Include="Entity\DGMatertial.cs" />
     <Compile Include="Entity\DGPlayer.cs" />
     <Compile Include="Graphics\DGSpriteAnimate.cs" />
     <Compile Include="Graphics\DGSpriteStatic.cs" />
@@ -83,10 +83,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screen\Base\DGScreen.cs" />
     <Compile Include="Screen\DGLoad.cs" />
+    <Compile Include="Screen\DGPause.cs" />
     <Compile Include="Screen\Level\DGLevel.cs" />
-    <Compile Include="Screen\Menu\DGMenuHighScore.cs" />
-    <Compile Include="Screen\Menu\DGMenuMain.cs" />
-    <Compile Include="Screen\Menu\DGMenuSettings.cs" />
+    <Compile Include="Screen\Menu\DGMenu.cs" />
+    <Compile Include="Util\DGHighScore.cs" />
+    <Compile Include="Util\DGSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DiseasesContent\DiseasesContent.contentproj">

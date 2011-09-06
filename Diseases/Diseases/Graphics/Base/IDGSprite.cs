@@ -14,18 +14,24 @@ namespace Diseases.Graphics
             get;
         }
 
-        Vector2     Scale
-        {
-            get;
-            set;
-        }
-        Vector2     Location
+        Color       Tint
         {
             get;
             set;
         }
 
         float       Rotation
+        {
+            get;
+            set;
+        }
+
+        Vector2     Scale
+        {
+            get;
+            set;
+        }
+        Vector2     Location
         {
             get;
             set;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Diseases.Screen.Menu
 {
-    public class DGMenuMain
+    public class DGMenu
     {
 
     }
