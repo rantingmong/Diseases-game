@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 
 using Microsoft.Xna.Framework.Media;
@@ -33,6 +34,8 @@ namespace Diseases
         private bool                    musicplayed     = false;
         private bool                    gamecrashed     = false;
 
+        private string                  crshmessage     = "";
+
         private SoundEffect             crashSound;
 
         private SpriteBatch             spriteBatch;
@@ -46,8 +49,8 @@ namespace Diseases
         {
             this.graphicsManager = new GraphicsDeviceManager(this);
 
-            this.graphicsManager.PreferredBackBufferWidth = 800;
-            this.graphicsManager.PreferredBackBufferHeight = 540;
+            this.graphicsManager.PreferredBackBufferWidth   = 800;
+            this.graphicsManager.PreferredBackBufferHeight  = 540;
         }
 
         protected override void         Dispose         (bool disposing)
@@ -65,12 +68,14 @@ namespace Diseases
 
                 this.Components.Add(this.screenmanager);
 
-                this.screenmanager.AddScreen(new MenuMain(this.screenmanager));
+                this.screenmanager.AddScreen(new MenuMain());
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message, "STOP");
-                Debug.WriteLine(ex.StackTrace, "STOP");
+                Debug.WriteLine("stack trace\n" + ex.StackTrace, "STOP");
+
+                this.crshmessage = ex.Message;
 
                 this.gamecrashed = true;
             }
@@ -85,14 +90,16 @@ namespace Diseases
                 this.Content.RootDirectory = "Content/Assets";
 
                 this.crashSprite.LoadContent(this.Content);
-                this.crashSound = this.Content.Load<SoundEffect>("sounds/126 pokemon whistle");
+                this.crashSound = this.Content.Load<SoundEffect>("sounds/crashsound");
 
                 this.spriteBatch = new SpriteBatch(this.GraphicsDevice);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message, "STOP");
-                Debug.WriteLine(ex.StackTrace, "STOP");
+                Debug.WriteLine("stack trace\n" + ex.StackTrace, "STOP");
+
+                this.crshmessage = ex.Message;
 
                 this.gamecrashed = true;
             }
@@ -101,8 +108,20 @@ namespace Diseases
         }
         protected override void         UnloadContent   ()
         {
-            this.crashSprite.UnloadContent();
-            this.crashSound.Dispose();
+            try
+            {
+                this.crashSprite.UnloadContent();
+                this.crashSound.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message, "STOP");
+                Debug.WriteLine("stack trace\n" + ex.StackTrace, "STOP");
+
+                this.crshmessage = ex.Message;
+
+                this.gamecrashed = true;
+            }
 
             base.UnloadContent();
         }
@@ -117,7 +136,9 @@ namespace Diseases
                 catch (Exception ex)
                 {
                     Debug.WriteLine(ex.Message, "STOP");
-                    Debug.WriteLine(ex.StackTrace, "STOP");
+                    Debug.WriteLine("stack trace\n" + ex.StackTrace, "STOP");
+
+                    this.crshmessage = ex.Message;
 
                     this.gamecrashed = true;
                 }
@@ -130,7 +151,14 @@ namespace Diseases
                     this.crashSound.Play();
 
                     this.musicplayed = true;
+
                 }
+
+                if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                    this.Exit();
+
+                if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.F1))
+                    Debug.Fail(this.crshmessage);
             }
         }
         protected override void         Draw            (GameTime gameTime)
@@ -146,25 +174,20 @@ namespace Diseases
                 catch (Exception ex)
                 {
                     Debug.WriteLine(ex.Message, "STOP");
-                    Debug.WriteLine(ex.StackTrace, "STOP");
+                    Debug.WriteLine("stack trace\n" + ex.StackTrace, "STOP");
+
+                    this.crshmessage = ex.Message;
 
                     this.gamecrashed = true;
                 }
             }
             else
             {
-                try
-                {
-                    this.spriteBatch.Begin();
+                this.spriteBatch.Begin();
 
-                    this.crashSprite.Render(this.spriteBatch);
+                this.crashSprite.Render(this.spriteBatch);
 
-                    this.spriteBatch.End();
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.Message);
-                }
+                this.spriteBatch.End();
             }
         }
     }

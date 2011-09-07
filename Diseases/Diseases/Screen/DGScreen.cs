@@ -22,12 +22,11 @@ namespace Diseases.Screen
         public DGScreenManager      ScreenManager
         {
             get { return this.screenManager; }
+            internal set { this.screenManager = value; }
         }
 
-        public                      DGScreen        (DGScreenManager screenManager)
+        public                      DGScreen        ()
         {
-            this.screenManager = screenManager;
-
             this.Initialize();
         }
 
@@ -57,6 +56,11 @@ namespace Diseases.Screen
         public      virtual void    Render          (SpriteBatch batch)
         {
 
+        }
+
+        public      virtual void    Exit            ()
+        {
+            this.screenManager.RemoveScreen(this);
         }
     }
 }

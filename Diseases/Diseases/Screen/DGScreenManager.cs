@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+
 
 using Diseases.Input;
 
@@ -12,30 +14,32 @@ namespace Diseases.Screen
 {
     public class DGScreenManager : DrawableGameComponent
     {
-        bool                    inputhandled    = false;
-        bool                    isinitialized   = false;
+        bool                        inputhandled    = false;
+        bool                        isinitialized   = false;
 
-        SpriteBatch             spritebatch;
+        DGInputSequence             crashinput;
 
-        ContentManager          content;
-        public ContentManager   Content
+        SpriteBatch                 spritebatch;
+
+        ContentManager              content;
+        public ContentManager       Content
         {
             get { return this.content; }
         }
 
-        DGInput                 input;
-        public DGInput          Input
+        DGInput                     input;
+        public DGInput              Input
         {
             get { return this.input; }
         }
 
-        List<DGScreen>          screens         = new List<DGScreen>();
-        public List<DGScreen>   Screens
+        List<DGScreen>              screens         = new List<DGScreen>();
+        public List<DGScreen>       Screens
         {
             get { return this.screens; }
         }
 
-        List<DGScreen>          tempscreens     = new List<DGScreen>();
+        List<DGScreen>              tempscreens     = new List<DGScreen>();
 
 
         public                      DGScreenManager (DiseasesGame game)
@@ -48,6 +52,9 @@ namespace Diseases.Screen
         {
             this.content = new ContentManager(this.Game.Services);
             this.content.RootDirectory = "content/assets";
+
+            this.crashinput = new DGInputSequence(new Keys[] { Keys.LeftControl, Keys.F12 }, false, true);
+            this.crashinput.inputname = "crashinput";
 
             base.Initialize();
 
@@ -76,6 +83,9 @@ namespace Diseases.Screen
         {
             this.input.Update(gameTime);
 
+            if (this.crashinput.Evaluate(this.input))
+                throw new NullReferenceException("test crash input!");
+
             this.tempscreens.Clear();
 
             foreach (DGScreen screen in this.screens)
@@ -98,18 +108,20 @@ namespace Diseases.Screen
                 }
             }
 
+            this.inputhandled = false;
+
             base.Update(gameTime);
         }
         public      override void   Draw            (GameTime gameTime)
         {
-            this.spritebatch.Begin();
-
             foreach (DGScreen screen in this.screens)
             {
-                screen.Render(this.spritebatch);
-            }
+                this.spritebatch.Begin();
 
-            this.spritebatch.End();
+                screen.Render(this.spritebatch);
+
+                this.spritebatch.End();
+            }
 
             base.Draw(gameTime);
         }
@@ -118,6 +130,8 @@ namespace Diseases.Screen
         {
             if (!this.screens.Contains(screen))
             {
+                screen.ScreenManager = this;
+
                 if (this.isinitialized)
                 {
                     screen.LoadContent();
@@ -128,7 +142,7 @@ namespace Diseases.Screen
         }
         public      void            RemoveScreen    (DGScreen screen)
         {
-            if (this.screens.Contains(screen))
+            if (this.screens.Contains(screen) && this.screens.Count > 1)
             {
                 screen.UnloadContent();
 

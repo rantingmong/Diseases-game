@@ -11,7 +11,7 @@ namespace Diseases.Input
         public KeyboardState CurKeyboardState;
         public KeyboardState OldKeyboardState;
 
-        public void Synch           ()
+        public void Sync            ()
         {
             CurKeyboardState = Keyboard.GetState();
             OldKeyboardState = Keyboard.GetState();
@@ -35,13 +35,13 @@ namespace Diseases.Input
 
         public bool TestKeyUp       (Keys key)
         {
-            this.Synch();
+            this.Sync();
 
             return CurKeyboardState.IsKeyUp(key);
         }
         public bool TestKeyDown     (Keys key)
         {
-            this.Synch();
+            this.Sync();
 
             return CurKeyboardState.IsKeyDown(key);
         }

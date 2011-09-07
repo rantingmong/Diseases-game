@@ -2,9 +2,6 @@ Content\Assets\Backgrounds\null.xnb
 Content\Assets\Backgrounds\errr.xnb
 Content\Assets\Backgrounds\load.xnb
 Content\Assets\Entities\null.xnb
+Content\Assets\Sounds\crashsound.xnb
 Content\Assets\Backgrounds\menu\main.xnb
 Content\Assets\Entities\menuentries\mainplay.xnb
-Content\Assets\Entities\menuentries\mainexit.xnb
-Content\Assets\Entities\menuentries\mainhigh.xnb
-Content\Assets\Entities\menuentries\mainsett.xnb
-Content\Assets\Sounds\crashsound.xnb

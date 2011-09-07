@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Diseases.Graphics
 {
-    public class DGSpriteAnimate : IDGSprite
+    public class DGSpriteAnimat : IDGSprite
     {
         bool    pause       = false;
 
@@ -63,7 +63,7 @@ namespace Diseases.Graphics
             set { this.location = value; }
         }
 
-        public              DGSpriteAnimate (string contentlocation, int fps, int totalframes)
+        public              DGSpriteAnimat  (string contentlocation, int fps, int totalframes)
         {
             this.contentloc = contentlocation;
 
@@ -73,8 +73,18 @@ namespace Diseases.Graphics
 
         public void         LoadContent     (ContentManager content)
         {
-            this.texture = content.Load<Texture2D>(this.contentloc);
+            try
+            {
+                this.texture = content.Load<Texture2D>(this.contentloc);
 
+                Debug.WriteLine(string.Format("asset created! ({0})", this.contentloc), "INFO");
+            }
+            catch (ContentLoadException fnfex)
+            {
+                this.texture = content.Load<Texture2D>("entities/null");
+
+                Debug.WriteLine(fnfex.Message, "WARN");
+            }
             this.width = this.texture.Width / this.totalfram;
             this.timeperfram = 1000 / this.frampersc;
 

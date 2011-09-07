@@ -57,9 +57,18 @@ namespace Diseases.Graphics
 
         public void         LoadContent     (ContentManager content)
         {
-            this.texture = content.Load<Texture2D>(this.contentloc);
+            try
+            {
+                this.texture = content.Load<Texture2D>(this.contentloc);
 
-            Debug.WriteLine(string.Format("asset created! ({0})", this.contentloc), "INFO");
+                Debug.WriteLine(string.Format("asset created! ({0})", this.contentloc), "INFO");
+            }
+            catch (ContentLoadException fnfex)
+            {
+                this.texture = content.Load<Texture2D>("entities/null");
+
+                Debug.WriteLine(fnfex.Message, "WARN");
+            }
         }
         public void         UnloadContent   ()
         {
