@@ -7,4 +7,7 @@ Content\Assets\Entities\menuentries\mainplay.xnb
 Content\Assets\Entities\menuentries\mainexit.xnb
 Content\Assets\Entities\menuentries\mainhigh.xnb
 Content\Assets\Entities\menuentries\mainsett.xnb
+Content\Assets\Backgrounds\menu\sett.xnb
+Content\Assets\Backgrounds\menu\high.xnb
 Content\Assets\Sounds\crashsound.xnb
+Content\Assets\Shaders\FadeEffect.xnb

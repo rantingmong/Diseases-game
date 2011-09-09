@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
@@ -7,13 +8,14 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-
 using Diseases.Input;
+using Diseases.Graphics;
 
 namespace Diseases.Screen
 {
     public class DGScreenManager : DrawableGameComponent
     {
+        bool                        screendrawn     = false;
         bool                        inputhandled    = false;
         bool                        isinitialized   = false;
 
@@ -50,6 +52,8 @@ namespace Diseases.Screen
 
         public      override void   Initialize      ()
         {
+            Debug.WriteLine("initializing screen manager...", "INFO");
+
             this.content = new ContentManager(this.Game.Services);
             this.content.RootDirectory = "content/assets";
 
@@ -67,7 +71,11 @@ namespace Diseases.Screen
             this.spritebatch = new SpriteBatch(this.Game.GraphicsDevice);
 
             foreach (DGScreen screen in this.screens)
+            {
+                Debug.WriteLine("loading screen " + screen.ToString(), "INFO");
+
                 screen.LoadContent();
+            }
 
             base.LoadContent();
         }
@@ -109,21 +117,33 @@ namespace Diseases.Screen
             }
 
             this.inputhandled = false;
-
-            base.Update(gameTime);
         }
         public      override void   Draw            (GameTime gameTime)
         {
+            this.tempscreens.Clear();
+
             foreach (DGScreen screen in this.screens)
+                this.tempscreens.Add(screen);
+
+            while (this.tempscreens.Count > 0)
             {
-                this.spritebatch.Begin();
+                DGScreen screen = this.tempscreens[this.tempscreens.Count - 1];
 
-                screen.Render(this.spritebatch);
+                this.tempscreens.RemoveAt(this.tempscreens.Count - 1);
+                if (!this.screendrawn || screen.PopupScreen)
+                {
+                    this.spritebatch.Begin();
 
-                this.spritebatch.End();
+                    screen.Render(this.spritebatch);
+
+                    this.spritebatch.End();
+
+                    if (!screen.PopupScreen)
+                        this.screendrawn = true;
+                }
             }
 
-            base.Draw(gameTime);
+            this.screendrawn = false;
         }
 
         public      void            AddScreen       (DGScreen screen)
@@ -134,6 +154,8 @@ namespace Diseases.Screen
 
                 if (this.isinitialized)
                 {
+                    Debug.WriteLine("loading screen " + screen.ToString(), "INFO");
+
                     screen.LoadContent();
                 }
 
@@ -144,7 +166,8 @@ namespace Diseases.Screen
         {
             if (this.screens.Contains(screen) && this.screens.Count > 1)
             {
-                screen.UnloadContent();
+                if (screen.UnloadOnRemove)
+                    screen.UnloadContent();
 
                 this.screens.Remove(screen);
             }

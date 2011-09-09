@@ -31,6 +31,10 @@ namespace Diseases
 
     public class DiseasesGame : Game
     {
+        public MenuMain menumain;
+        public MenuHigh menuhigh;
+        public MenuSett menusett;
+        
         private bool                    musicplayed     = false;
         private bool                    gamecrashed     = false;
 
@@ -68,7 +72,11 @@ namespace Diseases
 
                 this.Components.Add(this.screenmanager);
 
-                this.screenmanager.AddScreen(new MenuMain());
+                this.menumain = new MenuMain();
+                this.menusett = new MenuSett();
+                this.menuhigh = new MenuHigh();
+
+                this.screenmanager.AddScreen(this.menumain);
             }
             catch (Exception ex)
             {
@@ -112,6 +120,10 @@ namespace Diseases
             {
                 this.crashSprite.UnloadContent();
                 this.crashSound.Dispose();
+
+                this.menumain.UnloadContent();
+                this.menusett.UnloadContent();
+                this.menuhigh.UnloadContent();
             }
             catch (Exception ex)
             {

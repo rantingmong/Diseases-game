@@ -34,9 +34,27 @@ namespace Diseases.Screen.Menu
         DGSpriteStatic background = new DGSpriteStatic("backgrounds/menu/main");
 
         public MenuMain()
-            : base("menu test")
+            : base("main")
         {
             menuexit.Selected += new EventHandler<EventArgs>(menuexit_Selected);
+            menuhigh.Selected += new EventHandler<EventArgs>(menuhigh_Selected);
+            menusett.Selected += new EventHandler<EventArgs>(menusett_Selected);
+            menuplay.Selected += new EventHandler<EventArgs>(menuplay_Selected);
+        }
+
+        void menuplay_Selected(object sender, EventArgs e)
+        {
+            
+        }
+
+        void menuhigh_Selected(object sender, EventArgs e)
+        {
+            this.ScreenManager.AddScreen(((DiseasesGame)this.ScreenManager.Game).menuhigh);
+        }
+
+        void menusett_Selected(object sender, EventArgs e)
+        {
+            this.ScreenManager.AddScreen(((DiseasesGame)this.ScreenManager.Game).menusett);
         }
 
         void menuexit_Selected(object sender, EventArgs e)
@@ -46,8 +64,6 @@ namespace Diseases.Screen.Menu
 
         protected override void OnCancel()
         {
-            base.OnCancel();
-
             this.ScreenManager.Game.Exit();
         }
 

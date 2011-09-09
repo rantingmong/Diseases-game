@@ -45,11 +45,18 @@ namespace Diseases.Input
             {
                 if (complete)
                     returnvalue = keypress(key) && returnvalue;
-                else if (keypress(key))
-                    return true;
+                else
+                {
+                    if (keypress(key))
+                    {
+                        Debug.WriteLine("input invoked! " + this.inputname, "INFO");
+
+                        return true;
+                    }
+                }
             }
 
-            if (returnvalue)
+            if (returnvalue && complete)
                 Debug.WriteLine("input invoked! " + this.inputname, "INFO");
 
             if (!complete)

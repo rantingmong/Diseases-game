@@ -6,12 +6,27 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Microsoft.Xna.Framework.Content;
 using Diseases.Input;
+using System.Diagnostics;
 
 namespace Diseases.Screen
 {
     public abstract class DGScreen
     {
-        bool                        overrideinput = false;
+        bool                        popup           = false;
+        public bool                 PopupScreen
+        {
+            get { return this.popup; }
+            set { this.popup = value; }
+        }
+
+        bool                        unloadonremove  = false;
+        public bool                 UnloadOnRemove
+        {
+            get { return this.unloadonremove; }
+            set { this.unloadonremove = value; }
+        }
+
+        bool                        overrideinput   = false;
         public bool                 OverrideInput
         {
             get { return this.overrideinput; }
@@ -27,6 +42,8 @@ namespace Diseases.Screen
 
         public                      DGScreen        ()
         {
+            Debug.WriteLine("initializing screen " + this.ToString(), "INFO");
+
             this.Initialize();
         }
 

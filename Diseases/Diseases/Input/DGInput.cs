@@ -11,39 +11,57 @@ namespace Diseases.Input
         public KeyboardState CurKeyboardState;
         public KeyboardState OldKeyboardState;
 
-        public void Sync            ()
+        public MouseState CurMouseState;
+
+        public void Sync                ()
         {
             CurKeyboardState = Keyboard.GetState();
             OldKeyboardState = Keyboard.GetState();
         }
 
-        public void Update          (GameTime gametime)
+        public void Update              (GameTime gametime)
         {
             OldKeyboardState = CurKeyboardState;
 
             CurKeyboardState = Keyboard.GetState();
+            CurMouseState = Mouse.GetState();
         }
 
-        public bool TestKeyRleas    (Keys key)
+        public bool TestKeyRleas        (Keys key)
         {
             return OldKeyboardState.IsKeyDown(key) && CurKeyboardState.IsKeyUp(key);
         }
-        public bool TestKeyPress    (Keys key)
+        public bool TestKeyPress        (Keys key)
         {
             return OldKeyboardState.IsKeyUp(key) && CurKeyboardState.IsKeyDown(key);
         }
 
-        public bool TestKeyUp       (Keys key)
+        public bool TestKeyUp           (Keys key)
         {
-            this.Sync();
-
             return CurKeyboardState.IsKeyUp(key);
         }
-        public bool TestKeyDown     (Keys key)
+        public bool TestKeyDown         (Keys key)
         {
-            this.Sync();
-
             return CurKeyboardState.IsKeyDown(key);
+        }
+
+        public bool TestLocation        (Rectangle rectangle)
+        {
+            return (rectangle.Left <= CurMouseState.X) && (rectangle.Right >= CurMouseState.X) ||
+                    (rectangle.Top <= CurMouseState.X) && (rectangle.Bottom >= CurMouseState.Y);
+        }
+
+        public bool TestLeftButton      ()
+        {
+            return CurMouseState.LeftButton == ButtonState.Pressed ? true : false;
+        }
+        public bool TestRightButton     ()
+        {
+            return CurMouseState.RightButton == ButtonState.Pressed ? true : false;
+        }
+        public bool TestCenterButton    ()
+        {
+            return CurMouseState.MiddleButton == ButtonState.Pressed ? true : false;
         }
     }
 }

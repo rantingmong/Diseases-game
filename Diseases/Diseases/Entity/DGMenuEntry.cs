@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 using Diseases.Graphics;
-using Microsoft.Xna.Framework.Content;
 
 namespace Diseases.Entity
 {
@@ -17,20 +17,6 @@ namespace Diseases.Entity
         float elapsedtime = 0;
 
         Vector2 scale;
-
-        bool drawtext;
-        public bool DrawText
-        {
-            get { return this.drawtext; }
-            set { this.drawtext = value; }
-        }
-
-        string text;
-        public string Text
-        {
-            get { return this.text; }
-            set { this.text = value; }
-        }
 
         Vector2 location;
         public Vector2 Location
@@ -60,8 +46,6 @@ namespace Diseases.Entity
 
         public DGMenuEntry(string text, string contentlocation, bool animating)
         {
-            this.text = text;
-            
             this.scale = new Vector2();
 
             if (animating)
@@ -85,7 +69,7 @@ namespace Diseases.Entity
 
             this.elapsedtime += (float)gametime.ElapsedGameTime.TotalSeconds;
 
-            this.pulsate = (float)Math.Sin(this.elapsedtime * 6) + 1;
+            this.pulsate = (float)Math.Sin(this.elapsedtime * 10) + 1;
 
             float fadespeed = (float)gametime.ElapsedGameTime.TotalSeconds * 4;
 
@@ -97,7 +81,7 @@ namespace Diseases.Entity
             if (selectionFade == 0 && !isselected)
                 this.elapsedtime = 0;
 
-            float scalef = 1 + this.pulsate * 0.025f * selectionFade;
+            float scalef = 1 + this.pulsate * 0.015f * selectionFade;
             this.scale.X = scalef;
             this.scale.Y = scalef;
         }
@@ -105,11 +89,6 @@ namespace Diseases.Entity
         {
             this.sprite.Scale = this.scale;
             this.sprite.Render(batch);
-
-            if (this.drawtext)
-            {
-                // draw text here...
-            }
         }
     }
 }
