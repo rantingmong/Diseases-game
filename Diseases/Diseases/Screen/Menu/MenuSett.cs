@@ -12,12 +12,14 @@ using Diseases.Graphics;
 
 namespace Diseases.Screen.Menu
 {
-    public class MenuHigh : DGMenuScreen
+    public class MenuSett : DGMenuScreen
     {
-        DGSpriteStatic background = new DGSpriteStatic("backgrounds/menu/high");
+        DGSpriteStatic background = new DGSpriteStatic("backgrounds/menu/sett");
 
-        public MenuHigh()
-            : base("high scores")
+        List<IDGSprite> sprites = new List<IDGSprite>();
+
+        public MenuSett()
+            : base("settings")
         {
 
         }

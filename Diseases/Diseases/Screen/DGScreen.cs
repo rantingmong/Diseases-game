@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using Microsoft.Xna.Framework.Content;
+
 using Diseases.Input;
-using System.Diagnostics;
 
 namespace Diseases.Screen
 {
@@ -54,7 +55,7 @@ namespace Diseases.Screen
         
         public      virtual void    LoadContent     ()
         {
-
+            this.screenManager.isloading = false;
         }
         public      virtual void    UnloadContent   ()
         {
@@ -73,11 +74,6 @@ namespace Diseases.Screen
         public      virtual void    Render          (SpriteBatch batch)
         {
 
-        }
-
-        public      virtual void    Exit            ()
-        {
-            this.screenManager.RemoveScreen(this);
         }
     }
 }

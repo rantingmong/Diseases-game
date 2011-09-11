@@ -30,92 +30,135 @@
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.VideoImporters, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Assets\Fonts\" />
-    <Folder Include="Levels\" />
+    <Compile Include="Backgrounds\menu\exit.png">
+      <Name>exit</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Backgrounds\null.png">
+    <Compile Include="Backgrounds\null.png">
       <Name>null</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Backgrounds\errr.png">
+    <Compile Include="Backgrounds\errr.png">
       <Name>errr</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Backgrounds\load.png">
+    <Compile Include="Backgrounds\load.png">
       <Name>load</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Sounds\crashsound.wav">
+    <Compile Include="Sounds\crashsound.wav">
       <Name>crashsound</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Entities\null.png">
+    <Compile Include="Entities\null.png">
       <Name>null</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Backgrounds\menu\main.png">
+    <Compile Include="Backgrounds\menu\main.png">
       <Name>main</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Entities\menuentries\mainplay.png">
+    <Compile Include="Entities\menuentries\mainplay.png">
       <Name>mainplay</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Entities\menuentries\mainexit.png">
+    <Compile Include="Entities\menuentries\mainexit.png">
       <Name>mainexit</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Entities\menuentries\mainhigh.png">
+    <Compile Include="Entities\menuentries\mainhigh.png">
       <Name>mainhigh</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Entities\menuentries\mainsett.png">
+    <Compile Include="Entities\menuentries\mainsett.png">
       <Name>mainsett</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Backgrounds\menu\sett.png">
+    <Compile Include="Backgrounds\menu\sett.png">
       <Name>sett</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Backgrounds\menu\high.png">
+    <Compile Include="Backgrounds\menu\high.png">
       <Name>high</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Shaders\FadeEffect.fx">
+    <Compile Include="Shaders\FadeEffect.fx">
       <Name>FadeEffect</Name>
       <Importer>EffectImporter</Importer>
       <Processor>EffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Sounds\buttonpress.wav">
+      <Name>buttonpress</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Sounds\canceled.wav">
+      <Name>canceled</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Fonts\DebugFont.spritefont">
+      <Name>DebugFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Entities\bacteria\idle.png">
+      <Name>idle</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Entities\menuentries\no.png">
+      <Name>no</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Entities\menuentries\ok.png">
+      <Name>ok</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

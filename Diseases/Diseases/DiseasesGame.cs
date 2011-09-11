@@ -13,6 +13,7 @@ using Diseases.Screen;
 using Diseases.Graphics;
 
 using Diseases.Screen.Menu;
+using Diseases.Screen.Level;
 
 namespace Diseases
 {
@@ -31,10 +32,8 @@ namespace Diseases
 
     public class DiseasesGame : Game
     {
-        public MenuMain menumain;
-        public MenuHigh menuhigh;
-        public MenuSett menusett;
-        
+        MenuMain menumain = new MenuMain();
+
         private bool                    musicplayed     = false;
         private bool                    gamecrashed     = false;
 
@@ -65,16 +64,10 @@ namespace Diseases
         {
             try
             {
-                this.IsMouseVisible = true;
-
                 this.crashSprite = new DGSpriteStatic("backgrounds/errr");
                 this.screenmanager = new DGScreenManager(this);
 
                 this.Components.Add(this.screenmanager);
-
-                this.menumain = new MenuMain();
-                this.menusett = new MenuSett();
-                this.menuhigh = new MenuHigh();
 
                 this.screenmanager.AddScreen(this.menumain);
             }
@@ -95,7 +88,7 @@ namespace Diseases
         {
             try
             {
-                this.Content.RootDirectory = "Content/Assets";
+                this.Content.RootDirectory = "content";
 
                 this.crashSprite.LoadContent(this.Content);
                 this.crashSound = this.Content.Load<SoundEffect>("sounds/crashsound");
@@ -122,8 +115,6 @@ namespace Diseases
                 this.crashSound.Dispose();
 
                 this.menumain.UnloadContent();
-                this.menusett.UnloadContent();
-                this.menuhigh.UnloadContent();
             }
             catch (Exception ex)
             {
@@ -141,19 +132,22 @@ namespace Diseases
         protected override void         Update          (GameTime gameTime)
         {
             if (!this.gamecrashed)
-                try
-                {
-                    base.Update(gameTime);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex.Message, "STOP");
-                    Debug.WriteLine("stack trace\n" + ex.StackTrace, "STOP");
+            {
+                if (this.IsActive)
+                    try
+                    {
+                        base.Update(gameTime);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex.Message, "STOP");
+                        Debug.WriteLine("stack trace\n" + ex.StackTrace, "STOP");
 
-                    this.crshmessage = ex.Message;
+                        this.crshmessage = ex.Message;
 
-                    this.gamecrashed = true;
-                }
+                        this.gamecrashed = true;
+                    }
+            }
             else
             {
                 this.crashSprite.Update(gameTime);
@@ -163,7 +157,6 @@ namespace Diseases
                     this.crashSound.Play();
 
                     this.musicplayed = true;
-
                 }
 
                 if (Keyboard.GetState().IsKeyDown(Keys.Space))

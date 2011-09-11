@@ -37,6 +37,12 @@ namespace Diseases.Graphics
             set;
         }
 
+        Vector2     Offset
+        {
+            get;
+            set;
+        }
+
         void        LoadContent     (ContentManager content);
         void        UnloadContent   ();
 

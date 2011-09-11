@@ -63,6 +63,9 @@
     <CodeAnalysisRuleSet>ExtendedCorrectnessRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FarseerPhysicsXNA">
+      <HintPath>..\..\..\..\..\References\Farseer Physics\bin\x86\Release\FarseerPhysicsXNA.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
@@ -76,13 +79,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DiseasesGame.cs" />
-    <Compile Include="Entity\DGEntity.cs" />
-    <Compile Include="Entity\DGMenuEntry.cs" />
+    <Compile Include="Entity\Base\DGEntity.cs" />
+    <Compile Include="Entity\DGEnemy.cs" />
+    <Compile Include="Entity\DGNutrient.cs" />
     <Compile Include="Entity\DGPlayer.cs" />
+    <Compile Include="Entity\DGTarget.cs" />
+    <Compile Include="Screen\Menu\Base\DGMenuEntry.cs" />
     <Compile Include="Graphics\DGSpriteAnimat.cs" />
     <Compile Include="Graphics\DGSpriteStatic.cs" />
     <Compile Include="Graphics\Base\IDGSprite.cs" />
-    <Compile Include="Graphics\Base\IDGBackground.cs" />
     <Compile Include="Input\DGInput.cs" />
     <Compile Include="Input\DGInputAction.cs" />
     <Compile Include="Input\DGInputPoint.cs" />
@@ -91,12 +96,12 @@
     <Compile Include="Screen\DGScreen.cs" />
     <Compile Include="Screen\DGScreenManager.cs" />
     <Compile Include="Screen\Level\LevelGamePlay.cs" />
-    <Compile Include="Screen\Menu\Base\MenuScreen.cs" />
-    <Compile Include="Screen\Menu\MainSett.cs" />
+    <Compile Include="Screen\Menu\Base\DGMenuScreen.cs" />
+    <Compile Include="Screen\Menu\MenuSett.cs" />
+    <Compile Include="Screen\Menu\MenuExit.cs" />
     <Compile Include="Screen\Menu\MenuHigh.cs" />
     <Compile Include="Screen\Menu\MenuMain.cs" />
-    <Compile Include="Screen\Util\LoadScreen.cs" />
-    <Compile Include="Screen\Util\PauseScreen.cs" />
+    <Compile Include="Screen\Other\DGScreenLoad.cs" />
     <Compile Include="Util\DGHighScore.cs" />
     <Compile Include="Util\DGSettings.cs" />
   </ItemGroup>

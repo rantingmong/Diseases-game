@@ -9,26 +9,32 @@ using Microsoft.Xna.Framework.Input;
 using Diseases.Input;
 using Diseases.Entity;
 using Diseases.Graphics;
+using Diseases.Screen.Level;
 
 namespace Diseases.Screen.Menu
 {
-    public class MenuMain : MenuScreen
+    public class MenuMain : DGMenuScreen
     {
+        MenuHigh smenuhigh = new MenuHigh();
+        MenuSett smenusett = new MenuSett();
+        MenuExit smenuexit = new MenuExit();
+        LevelGamePlay play = new LevelGamePlay();
+
         DGMenuEntry menuplay = new DGMenuEntry("play", "entities/menuentries/mainplay", false)
         {
-            Location = new Vector2(55, 96)
+            Location = new Vector2(100, 350)
         };
         DGMenuEntry menuhigh = new DGMenuEntry("play", "entities/menuentries/mainhigh", false)
         {
-            Location = new Vector2(55, 367)
+            Location = new Vector2(265, 350)
         };
         DGMenuEntry menusett = new DGMenuEntry("play", "entities/menuentries/mainsett", false)
         {
-            Location = new Vector2(486, 95)
+            Location = new Vector2(430, 350)
         };
         DGMenuEntry menuexit = new DGMenuEntry("exit", "entities/menuentries/mainexit", false)
         {
-            Location = new Vector2(486, 367)
+            Location = new Vector2(595, 350)
         };
 
         DGSpriteStatic background = new DGSpriteStatic("backgrounds/menu/main");
@@ -44,27 +50,24 @@ namespace Diseases.Screen.Menu
 
         void menuplay_Selected(object sender, EventArgs e)
         {
-            
+            this.ScreenManager.SwitchScreen(this.play);
         }
-
         void menuhigh_Selected(object sender, EventArgs e)
         {
-            this.ScreenManager.AddScreen(((DiseasesGame)this.ScreenManager.Game).menuhigh);
+            this.ScreenManager.AddScreen(this.smenuhigh);
         }
-
         void menusett_Selected(object sender, EventArgs e)
         {
-            this.ScreenManager.AddScreen(((DiseasesGame)this.ScreenManager.Game).menusett);
+            this.ScreenManager.AddScreen(this.smenusett);
         }
-
         void menuexit_Selected(object sender, EventArgs e)
         {
-            this.ScreenManager.Game.Exit();
+            this.OnCancel();
         }
 
         protected override void OnCancel()
         {
-            this.ScreenManager.Game.Exit();
+            this.ScreenManager.AddScreen(this.smenuexit);
         }
 
         protected override void Initialize()

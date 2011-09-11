@@ -63,6 +63,12 @@ namespace Diseases.Graphics
             set { this.location = value; }
         }
 
+        public Vector2 Offset
+        {
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
+        }
+
         public              DGSpriteAnimat  (string contentlocation, int fps, int totalframes)
         {
             this.contentloc = contentlocation;
@@ -114,6 +120,9 @@ namespace Diseases.Graphics
         }
         public void         Render          (SpriteBatch batch)
         {
+            if (texture == null)
+                return;
+
             this.clipLoc.X = this.curframe * this.width;
 
             batch.Draw(this.texture, this.location, this.clipLoc, this.tint, this.rotation, Vector2.Zero, this.scale, SpriteEffects.None, 0);

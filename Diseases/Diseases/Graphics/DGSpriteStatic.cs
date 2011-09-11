@@ -50,6 +50,13 @@ namespace Diseases.Graphics
             set { this.location = value; }
         }
 
+        Vector2 offset = Vector2.Zero;
+        public Vector2 Offset
+        {
+            get { return this.offset; }
+            set { this.offset = value; }
+        }
+
         public              DGSpriteStatic  (string contentlocation)
         {
             this.contentloc = contentlocation;
@@ -81,7 +88,19 @@ namespace Diseases.Graphics
         }
         public void         Render          (SpriteBatch batch)
         {
-            batch.Draw(this.texture, this.location, null, this.tint, this.rotation, Vector2.Zero, this.scale, SpriteEffects.None, 0);
+            if (texture == null)
+                return;
+
+            batch.Draw(this.texture,
+                this.location,
+                null, 
+                this.tint, 
+                this.rotation,
+                this.offset, 
+                this.scale,
+                SpriteEffects.None,
+                0);
+
         }
     }
 }
