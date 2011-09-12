@@ -1,3 +1,4 @@
+Content\Backgrounds\menu\exit.xnb
 Content\Backgrounds\null.xnb
 Content\Backgrounds\errr.xnb
 Content\Backgrounds\load.xnb
@@ -10,11 +11,16 @@ Content\Entities\menuentries\mainsett.xnb
 Content\Backgrounds\menu\sett.xnb
 Content\Backgrounds\menu\high.xnb
 Content\Entities\bacteria\idle.xnb
+Content\Entities\menuentries\no.xnb
+Content\Entities\menuentries\ok.xnb
+Content\Entities\enemy\idle.xnb
+Content\Entities\powerup\idle.xnb
+Content\Entities\target\idle.xnb
+Content\Backgrounds\menu\paus.xnb
+Content\Entities\menuentries\quit.xnb
+Content\Entities\menuentries\resm.xnb
 Content\Sounds\crashsound.xnb
 Content\Sounds\buttonpress.xnb
 Content\Sounds\canceled.xnb
 Content\Shaders\FadeEffect.xnb
 Content\Fonts\DebugFont.xnb
-Content\Backgrounds\menu\exit.xnb
-Content\Entities\menuentries\no.xnb
-Content\Entities\menuentries\ok.xnb

@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 using Diseases.Input;
+using Diseases.Physics;
 using Diseases.Graphics;
 
 using FarseerPhysics.Dynamics;
@@ -16,86 +17,116 @@ namespace Diseases.Entity
 {
     public class DGPlayer : DGEntity
     {
-        float           elapsed     = 0;
+        bool            ypressed    = false;
+        bool            xpressed    = false;
+        float           kpelapsed   = 0;
 
-        bool            usemouse    = false;
-        Point           mpoint      = Point.Zero;
-
-        Vector2         location    = Vector2.Zero;
-        public Vector2  Location
-        {
-            get { return this.location; }
-            set { this.location = value; }
-        }
+        Vector2         fvector     = Vector2.Zero;
 
         DGInputAction   keyup       = new DGInputAction(Keys.Up,    false);
         DGInputAction   keydown     = new DGInputAction(Keys.Down,  false);
         DGInputAction   keyleft     = new DGInputAction(Keys.Left,  false);
         DGInputAction   keyrigt     = new DGInputAction(Keys.Right, false);
 
-        public DGPlayer()
+        protected override void Initialize()
         {
-            this.sprite = new DGSpriteStatic("entities/null");
+            this.restitution = 1.5f;
+            this.sprite = new DGSpriteStatic("entities/bacteria/idle");
+        }
 
-            this.speed = 0;
-            this.restitution = 0;
+        public override void LoadContent(ContentManager content, World physics)
+        {
+            base.LoadContent(content, physics);
 
-            this.life = 5;
+            this.physics.Position = ConvertUnits.ToSimUnits(50, 50);
+            this.physics.CollisionCategories = Category.Cat1;
+            this.physics.CollidesWith = Category.Cat1;
         }
 
         public override void HandleInput(GameTime gametime, DGInput input)
         {
-            if (input.CurMouseState.X != this.mpoint.X && input.CurMouseState.Y != this.mpoint.Y)
-                this.usemouse = true;
+            kpelapsed += (float)gametime.ElapsedGameTime.TotalMilliseconds;
 
-            this.elapsed += (float)gametime.ElapsedGameTime.TotalMilliseconds;
-
-            if (this.elapsed > 5)
+            if (kpelapsed > 50)
             {
                 if (keyup.Evaluate(input))
                 {
-                    location.Y -= 4;
-                    this.usemouse = false;
+                    this.physics.ApplyLinearImpulse(new Vector2(0, -0.5f));
+
+                    this.ypressed = true;
+                }
+                else
+                {
+                    this.ypressed = false;
                 }
 
                 if (keydown.Evaluate(input))
                 {
-                    location.Y += 4;
-                    this.usemouse = false;
+                    this.physics.ApplyLinearImpulse(new Vector2(0, 0.5f));
+
+                    this.ypressed = true;
+                }
+                else
+                {
+                    this.ypressed = false;
                 }
 
                 if (keyleft.Evaluate(input))
                 {
-                    location.X -= 4;
-                    this.usemouse = false;
+                    this.physics.ApplyLinearImpulse(new Vector2(-0.5f, 0));
+
+                    this.xpressed = true;
+                }
+                else
+                {
+                    this.xpressed = false;
                 }
 
                 if (keyrigt.Evaluate(input))
                 {
-                    location.X += 4;
-                    this.usemouse = false;
+                    this.physics.ApplyLinearImpulse(new Vector2(0.5f, 0));
+
+                    this.xpressed = true;
+                }
+                else
+                {
+                    this.xpressed = false;
                 }
 
-                this.elapsed = 0;
+                kpelapsed = 0;
             }
 
-            if (this.usemouse)
+            float fx = 0;
+            float fy = 0;
+
+            if (this.xpressed)
             {
-                location.X = input.CurMouseState.X - (this.sprite.Texture.Width / 2);
-                location.Y = input.CurMouseState.Y - (this.sprite.Texture.Height / 2);
+                fx = MathHelper.Clamp(this.physics.LinearVelocity.X, -2, 2);
+            }
+            else
+            {
+                if (this.physics.LinearVelocity.X > 0)
+                    fx = MathHelper.Clamp(this.physics.LinearVelocity.X - 0.05f, 0, 2);
+                else
+                    fx = MathHelper.Clamp(this.physics.LinearVelocity.X + 0.05f, -2, 0);
             }
 
-            location.X = (int)MathHelper.Clamp(location.X, 0, 800 - this.sprite.Texture.Width);
-            location.Y = (int)MathHelper.Clamp(location.Y, 0, 540 - this.sprite.Texture.Height);
+            if (this.ypressed)
+            {
+                fy = MathHelper.Clamp(this.physics.LinearVelocity.Y, -2, 2);
+            }
+            else
+            {
+                if (this.physics.LinearVelocity.Y > 0)
+                    fy = MathHelper.Clamp(this.physics.LinearVelocity.Y - 0.05f, 0, 2);
+                else
+                    fy = MathHelper.Clamp(this.physics.LinearVelocity.Y + 0.05f, -2, 0);
+            }
 
-            this.mpoint.X = input.CurMouseState.X;
-            this.mpoint.Y = input.CurMouseState.Y;
-        }
+            fvector.X = fx;
+            fvector.Y = fy;
 
-        public override void Render(SpriteBatch batch)
-        {
-            this.sprite.Location = this.location;
-            base.Render(batch);
+            this.physics.LinearVelocity = fvector;
         }
     }
 }

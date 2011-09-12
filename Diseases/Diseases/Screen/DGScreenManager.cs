@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Diseases.Input;
 using Diseases.Graphics;
 using Diseases.Screen.Other;
+using Diseases.Physics;
 
 namespace Diseases.Screen
 {
@@ -138,6 +139,8 @@ namespace Diseases.Screen
             {
                 this.tempscreens.Clear();
 
+                Viewport vport = this.Game.GraphicsDevice.Viewport;
+
                 foreach (DGScreen screen in this.screens)
                     this.tempscreens.Add(screen);
 
@@ -150,7 +153,6 @@ namespace Diseases.Screen
                     screen.Render(this.spritebatch);
 
                     this.spritebatch.End();
-
                 }
             }
             else

@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 using Diseases.Input;
+using Diseases.Physics;
 using Diseases.Graphics;
 
 using FarseerPhysics.Dynamics;
@@ -15,9 +16,9 @@ namespace Diseases.Entity
 {
     public abstract class DGEntity
     {
-        private     Body            physics;
+        protected   Body            physics;
 
-        protected   int             restitution     = 10;
+        protected   float           restitution     = 0.8f;
         protected   float           speed           = 1.5f;
 
         protected   int             life            = 10;
@@ -28,6 +29,8 @@ namespace Diseases.Entity
         }
 
         protected   IDGSprite       sprite;
+
+        Vector2 offset = Vector2.Zero;
 
         public                      DGEntity        ()
         {
@@ -43,8 +46,11 @@ namespace Diseases.Entity
         {
             this.sprite.LoadContent(content);
 
-            this.physics = BodyFactory.CreateCircle(physics, sprite.Texture.Width / 2, 0, Vector2.Zero);
-            this.physics.Restitution = restitution;
+            this.physics = BodyFactory.CreateCircle(physics, ConvertUnits.ToSimUnits(sprite.Texture.Width / 2), 0);
+            this.physics.BodyType = BodyType.Dynamic;
+            this.physics.Restitution = this.restitution;
+
+            offset = new Vector2(sprite.Texture.Width / 2);
         }
         public      virtual void    UnloadContent   ()
         {
@@ -64,6 +70,10 @@ namespace Diseases.Entity
         }
         public      virtual void    Render          (SpriteBatch batch)
         {
+            this.sprite.Location = ConvertUnits.ToDisplayUnits(this.physics.Position);
+            this.sprite.Rotation = this.physics.Rotation;
+            this.sprite.Offset = offset;
+
             this.sprite.Render(batch);
         }
     }

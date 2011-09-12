@@ -52,8 +52,8 @@ namespace Diseases.Screen.Menu
         {
             base.Initialize();
 
-            this.MenuList.Add(buttonok);
             this.MenuList.Add(buttonno);
+            this.MenuList.Add(buttonok);
 
             this.BackgroundList.Add(background);
         }

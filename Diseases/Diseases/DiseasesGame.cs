@@ -52,6 +52,8 @@ namespace Diseases
         {
             this.graphicsManager = new GraphicsDeviceManager(this);
 
+            this.graphicsManager.PreferMultiSampling = true;
+
             this.graphicsManager.PreferredBackBufferWidth   = 800;
             this.graphicsManager.PreferredBackBufferHeight  = 540;
         }

@@ -63,8 +63,9 @@
     <CodeAnalysisRuleSet>ExtendedCorrectnessRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FarseerPhysicsXNA">
-      <HintPath>..\..\..\..\..\References\Farseer Physics\bin\x86\Release\FarseerPhysicsXNA.dll</HintPath>
+    <Reference Include="FarseerPhysicsXNA, Version=3.3.4270.31990, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\References\Farseer Physics Engine 3.3.1 Samples XNA\Farseer Physics Engine 3.3 XNA\bin\x86\Release\FarseerPhysicsXNA.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
@@ -84,6 +85,9 @@
     <Compile Include="Entity\DGNutrient.cs" />
     <Compile Include="Entity\DGPlayer.cs" />
     <Compile Include="Entity\DGTarget.cs" />
+    <Compile Include="Physics\ConvertUnits.cs" />
+    <Compile Include="Physics\DebugViewXNA.cs" />
+    <Compile Include="Physics\PrimitiveBatch.cs" />
     <Compile Include="Screen\Menu\Base\DGMenuEntry.cs" />
     <Compile Include="Graphics\DGSpriteAnimat.cs" />
     <Compile Include="Graphics\DGSpriteStatic.cs" />
@@ -97,6 +101,7 @@
     <Compile Include="Screen\DGScreenManager.cs" />
     <Compile Include="Screen\Level\LevelGamePlay.cs" />
     <Compile Include="Screen\Menu\Base\DGMenuScreen.cs" />
+    <Compile Include="Screen\Menu\MenuPaus.cs" />
     <Compile Include="Screen\Menu\MenuSett.cs" />
     <Compile Include="Screen\Menu\MenuExit.cs" />
     <Compile Include="Screen\Menu\MenuHigh.cs" />

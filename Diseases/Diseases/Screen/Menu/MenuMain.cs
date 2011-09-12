@@ -22,19 +22,19 @@ namespace Diseases.Screen.Menu
 
         DGMenuEntry menuplay = new DGMenuEntry("play", "entities/menuentries/mainplay", false)
         {
-            Location = new Vector2(100, 350)
+            Location = new Vector2(50, 350)
         };
         DGMenuEntry menuhigh = new DGMenuEntry("play", "entities/menuentries/mainhigh", false)
         {
-            Location = new Vector2(265, 350)
+            Location = new Vector2(215, 350)
         };
         DGMenuEntry menusett = new DGMenuEntry("play", "entities/menuentries/mainsett", false)
         {
-            Location = new Vector2(430, 350)
+            Location = new Vector2(380, 350)
         };
         DGMenuEntry menuexit = new DGMenuEntry("exit", "entities/menuentries/mainexit", false)
         {
-            Location = new Vector2(595, 350)
+            Location = new Vector2(545, 350)
         };
 
         DGSpriteStatic background = new DGSpriteStatic("backgrounds/menu/main");
