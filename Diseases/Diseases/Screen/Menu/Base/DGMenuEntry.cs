@@ -90,7 +90,7 @@ namespace Diseases.Entity
             this.scale.X = scalef;
             this.scale.Y = scalef;
 
-            this.offset.X = this.sprite.Texture.Width * ofactr ;
+            this.offset.X = this.sprite.Texture.Width * ofactr;
             this.offset.Y = this.sprite.Texture.Height * ofactr;
         }
         public void Render(SpriteBatch batch, bool isselected)

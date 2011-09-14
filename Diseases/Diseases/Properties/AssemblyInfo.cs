@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("Diseases")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyCopyright("Copyright ©  2011")]
+[assembly: AssemblyCopyright("Copyright © 2011 Lam, Ong, Josef, Riva")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

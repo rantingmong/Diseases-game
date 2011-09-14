@@ -19,8 +19,14 @@ Content\Entities\target\idle.xnb
 Content\Backgrounds\menu\paus.xnb
 Content\Entities\menuentries\quit.xnb
 Content\Entities\menuentries\resm.xnb
+Content\Entities\target\inft.xnb
+Content\Backgrounds\menu\over.xnb
 Content\Sounds\crashsound.xnb
 Content\Sounds\buttonpress.xnb
 Content\Sounds\canceled.xnb
+Content\Sounds\bump.xnb
+Content\Sounds\ouch.xnb
+Content\Sounds\health.xnb
 Content\Shaders\FadeEffect.xnb
 Content\Fonts\DebugFont.xnb
+Content\Fonts\GameFont.xnb

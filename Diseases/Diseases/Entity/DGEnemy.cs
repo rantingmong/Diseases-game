@@ -17,6 +17,12 @@ namespace Diseases.Entity
 {
     public class DGEnemy : DGEntity
     {
+        public bool dead = false;
+
+        bool damaged = false;
+        float cooldowndamage = 0;
+        public int damagecounter = 0;
+
         Random randomizer;
 
         Vector2 fVector = Vector2.Zero;
@@ -25,11 +31,10 @@ namespace Diseases.Entity
         {
             this.randomizer = randomizer;
         }
-
         protected override void Initialize()
         {
             this.restitution = 1.5f;
-            this.speed = 2;
+            this.speed = 1.5f;
             this.sprite = new DGSpriteStatic("entities/enemy/idle");
         }
 
@@ -42,19 +47,60 @@ namespace Diseases.Entity
 
             this.physics.CollisionCategories = Category.Cat3;
             this.physics.CollidesWith = Category.Cat3;
+
+            this.bounds.X = (int)ConvertUnits.ToDisplayUnits(this.physics.Position.X);
+            this.bounds.Y = (int)ConvertUnits.ToDisplayUnits(this.physics.Position.Y);
         }
 
         public override void Update(GameTime gametime)
         {
             base.Update(gametime);
 
+            this.cooldowndamage += (float)gametime.ElapsedGameTime.TotalSeconds;
+
+            if (this.cooldowndamage > 2)
+            {
+                this.damaged = false;
+
+                this.cooldowndamage = 0;
+            }
+
+            if (this.damagecounter == 5)
+                this.sprite.Tint = Color.Yellow;
+
+            if (this.damagecounter == 8)
+                this.sprite.Tint = Color.Green;
+
+            if (this.damagecounter == 10)
+                this.dead = true;
+
             float fx = MathHelper.Clamp(this.physics.LinearVelocity.X, -this.speed, this.speed);
             float fy = MathHelper.Clamp(this.physics.LinearVelocity.Y, -this.speed, this.speed);
+
+            if (fx > 0)
+                fx = fx + (this.speed - fx);
+            else
+                fx = fx - (this.speed + fx);
+
+            if (fy > 0)
+                fy = fy + (this.speed - fy);
+            else
+                fy = fy - (this.speed + fy);
 
             this.fVector.X = fx;
             this.fVector.Y = fy;
 
             this.physics.LinearVelocity = this.fVector;
+        }
+
+        public void Damage()
+        {
+            if (!this.damaged)
+            {
+                this.damagecounter++;
+
+                this.damaged = true;
+            }
         }
     }
 }

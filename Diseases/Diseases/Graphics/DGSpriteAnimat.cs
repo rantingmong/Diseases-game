@@ -10,8 +10,6 @@ namespace Diseases.Graphics
 {
     public class DGSpriteAnimat : IDGSprite
     {
-        bool    pause       = false;
-
         int     width       = 0;
         int     curframe    = 0;
 
@@ -35,38 +33,39 @@ namespace Diseases.Graphics
             get { return this.texture; }
         }
 
-        Color tint = Color.White;
+        Color tint          = Color.White;
         public Color        Tint
         {
             get { return this.tint; }
             set { this.tint = value; }
         }
 
-        float rotation = 0;
+        float rotation      = 0;
         public float        Rotation
         {
             get { return this.rotation; }
             set { this.rotation = value; }
         }
 
-        Vector2 scale = new Vector2(1, 1);
+        Vector2 scale       = new Vector2(1, 1);
         public Vector2      Scale
         {
             get { return this.scale; }
             set { this.scale = value; }
         }
 
-        Vector2 location = Vector2.Zero;
+        Vector2 location    = Vector2.Zero;
         public Vector2      Location
         {
             get { return this.location; }
             set { this.location = value; }
         }
 
-        public Vector2 Offset
+        Vector2 offset      = Vector2.Zero;
+        public Vector2      Offset
         {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
+            get { return this.offset; }
+            set { this.offset = value; }
         }
 
         public              DGSpriteAnimat  (string contentlocation, int fps, int totalframes)
@@ -111,11 +110,14 @@ namespace Diseases.Graphics
         {
             this.elapsedtime += (float)gametime.ElapsedGameTime.TotalMilliseconds;
 
-            if (this.elapsedtime > this.timeperfram && !this.pause)
+            if (this.elapsedtime > this.timeperfram)
             {
                 this.elapsedtime = 0;
 
-                this.curframe = (this.curframe++ % this.totalfram);
+                this.curframe++;
+                this.curframe %= this.totalfram;
+
+                this.clipLoc.X = this.curframe * this.width;
             }
         }
         public void         Render          (SpriteBatch batch)
@@ -123,9 +125,7 @@ namespace Diseases.Graphics
             if (texture == null)
                 return;
 
-            this.clipLoc.X = this.curframe * this.width;
-
-            batch.Draw(this.texture, this.location, this.clipLoc, this.tint, this.rotation, Vector2.Zero, this.scale, SpriteEffects.None, 0);
+            batch.Draw(this.texture, this.location, this.clipLoc, this.tint, this.rotation, this.offset, this.scale, SpriteEffects.None, 0);
         }
     }
 }

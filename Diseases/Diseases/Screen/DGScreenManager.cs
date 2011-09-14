@@ -207,6 +207,7 @@ namespace Diseases.Screen
                 {
                     Name            = "load thread",
                     IsBackground    = false
+
                 };
                 loadThread.Start();
             }
