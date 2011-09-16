@@ -16,31 +16,44 @@ namespace Diseases.Entity
 {
     public abstract class DGEntity
     {
-        public      Body            physics;
+        protected   float       restitution     = 0.8f;
+        protected   float       speed           = 1.5f;
 
-        protected   float           restitution     = 0.8f;
-        protected   float           speed           = 1.5f;
+        protected   float       cooldownTotal   = 2;
+        protected   float       cooldownElapsed = 0;
+        protected   bool        cooldownActive  = false;
 
-        protected   int             life            = 10;
-        public      int             EntityLife
+        protected   IDGSprite   sprite;
+
+        protected   Vector2     offset          = Vector2.Zero;
+
+        protected   Body        physics;
+        public      Body        EntityPhysics
         {
-            get { return this.life; }
-            set { this.life = value; }
+            get { return this.physics; }
         }
 
-        protected   IDGSprite       sprite;
+        protected   int         wastedLife            = 0;
+        public      int         WastedLife
+        {
+            get { return this.wastedLife; }
+        }
 
-        protected   Vector2         offset          = Vector2.Zero;
+        protected   bool        dead            = false;
+        public      bool        EntityDead
+        {
+            get { return this.dead; }
+        }
 
-        Vector2                     location        = Vector2.Zero;
-        public      Vector2         Location
+        Vector2                 location        = Vector2.Zero;
+        public      Vector2     EntityLocation
         {
             get { return ConvertUnits.ToDisplayUnits(this.physics.Position); }
             set { this.physics.Position = ConvertUnits.ToSimUnits(value); }
         }
 
-        protected   Rectangle       bounds;
-        public      Rectangle       Bounds
+        protected   Rectangle   bounds;
+        public      Rectangle   EntityBounds
         {
             get
             {
@@ -49,14 +62,12 @@ namespace Diseases.Entity
              
                 return this.bounds;
             }
-            set { this.bounds = value; }
         }
 
         public                      DGEntity        ()
         {
             this.Initialize();
         }
-
         protected   virtual void    Initialize      ()
         {
             
@@ -66,13 +77,16 @@ namespace Diseases.Entity
         {
             this.sprite.LoadContent(content);
 
-            this.physics = BodyFactory.CreateCircle(physics, ConvertUnits.ToSimUnits(sprite.Texture.Height / 2), 0);
-            this.physics.BodyType = BodyType.Dynamic;
-            this.physics.Restitution = this.restitution;
+            this.physics                = BodyFactory.CreateCircle(physics, ConvertUnits.ToSimUnits(sprite.Texture.Height / 2), 0);
+            this.physics.BodyType       = BodyType.Dynamic;
+            this.physics.Restitution    = this.restitution;
 
-            this.offset = new Vector2(sprite.Texture.Height / 2);
+            this.offset = new Vector2(this.sprite.Texture.Height / 2);
 
-            this.bounds = new Rectangle(0, 0, (int)this.sprite.Texture.Height, (int)this.sprite.Texture.Height);
+            this.bounds = new Rectangle(0, 
+                                        0, 
+                                        (int)this.sprite.Texture.Height, 
+                                        (int)this.sprite.Texture.Height);
         }
         public      virtual void    UnloadContent   ()
         {
@@ -85,17 +99,25 @@ namespace Diseases.Entity
         {
 
         }
-
         public      virtual void    Update          (GameTime gametime)
         {
             this.sprite.Update(gametime);
 
-            this.sprite.Location = ConvertUnits.ToDisplayUnits(this.physics.Position);
-            this.sprite.Rotation = this.physics.Rotation;
-            this.sprite.Offset = offset;
+            this.cooldownElapsed += (float)gametime.ElapsedGameTime.TotalSeconds;
+
+            if (this.cooldownElapsed > this.cooldownTotal)
+            {
+                this.cooldownActive = false;
+
+                this.cooldownElapsed = 0;
+            }
         }
         public      virtual void    Render          (SpriteBatch batch)
         {
+            this.sprite.Location = ConvertUnits.ToDisplayUnits(this.physics.Position);
+            this.sprite.Rotation = this.physics.Rotation;
+            this.sprite.Offset = offset;
+
             this.sprite.Render(batch);
         }
     }

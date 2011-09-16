@@ -16,29 +16,29 @@ namespace Diseases.Screen.Other
     {
         IDGSprite background;
 
-        public DGScreenLoad(IDGSprite loadScreen)
+        public                  DGScreenLoad    (IDGSprite loadScreen)
         {
             background = loadScreen;
         }
 
-        public override void LoadContent()
+        public override void    LoadContent     ()
         {
             background.LoadContent(this.ScreenManager.Content);
 
             base.LoadContent();
         }
-        public override void UnloadContent()
+        public override void    UnloadContent   ()
         {
             background.UnloadContent();
 
             base.UnloadContent();
         }
 
-        public override void Update(GameTime gametime)
+        public override void    Update          (GameTime gametime)
         {
             background.Update(gametime);
         }
-        public override void Render(SpriteBatch batch)
+        public override void    Render          (SpriteBatch batch)
         {
             background.Render(batch);
         }

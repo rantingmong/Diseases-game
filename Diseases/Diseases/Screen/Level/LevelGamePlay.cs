@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Diagnostics;
 using System.Collections.Generic;
 
@@ -23,292 +22,293 @@ namespace Diseases.Screen.Level
 {
     public class LevelGamePlay : DGScreen
     {
-        int                         score               = 0;
-        float                       gameperiod          = 0;
+        Random              randomizer;
 
-        float                       targetElapsedTime   = 0;
-        float                       enemyElapsedTime    = 0;
-        float                       pwerpElapsedTime    = 0;
+        Body                gameBorder;
+        World               gamePhysic;
 
-        Random                      rand;
+        Matrix              projMatrix;
+        DebugViewXNA        viewnDebug;
 
-        Body                        borderPhysics;
+        DGPlayer            player;
 
-        DGPlayer                    player;
+        float               totElapsed = 0;
 
-        Matrix                      physicsProj;
-        Matrix                      physicsView;
-        DebugViewXNA                physicsDebug;
+        List<DGRedCell>     redCells;
+        List<DGWhtCell>     whtCells;
+        List<DGPowCell>     powCells;
 
-        List<DGEnemy>               enemies;
-        List<DGTarget>              targets;
-        List<DGNutrient>            powerup;
+        float               redElapsed = 0;
+        float               whtElapsed = 0;
+        float               powElapsed = 0;
 
-        List<IDGSprite>             background;
+        DGSpriteStatic      gameBackground;
 
-        World                       physics;
+        bool                physicsDebugShown = false;
+        DGInputAction       physicsInput;
 
-        bool                        showdebugphysics;
-        DGInputAction               debugphysics;
+        MenuPaus            pausMenu;
+        DGInputAction       pausInput;
 
-        DGInputAction               pause;
-        MenuPaus                    menupause;
-
-        SpriteFont                  font;
-
-        protected   override void   Initialize      ()
+        protected   override void Initialize    ()
         {
-            this.enemies = new List<DGEnemy>();
-            this.targets = new List<DGTarget>();
-            this.powerup = new List<DGNutrient>();
+            this.gameBackground = new DGSpriteStatic("backgrounds/null");
 
-            this.background = new List<IDGSprite>();
-            this.background.Add(new DGSpriteStatic("backgrounds/null"));
+            this.redCells = new List<DGRedCell>();
+            this.whtCells = new List<DGWhtCell>();
+            this.powCells = new List<DGPowCell>();
 
-            this.pause          = new DGInputAction(Keys.Escape, true);
-            this.debugphysics   = new DGInputAction(Keys.F1, true);
+            this.pausInput = new DGInputAction(Keys.Escape, true);
+            this.physicsInput = new DGInputAction(Keys.F1, true);
+
+            this.pausMenu = new MenuPaus();
         }
 
-        public      override void   LoadContent     ()
+        public      override void LoadContent   ()
         {
-            Viewport vport = this.ScreenManager.Game.GraphicsDevice.Viewport;
+            this.gameBackground.LoadContent(this.ScreenManager.Content);
 
-            this.physics = new World(new Vector2(0, 0));
-
-            this.menupause = new MenuPaus();
-
-            this.font = this.ScreenManager.Content.Load<SpriteFont>("fonts/gamefont");
-
-            this.physicsDebug = new DebugViewXNA(this.physics);
-            this.physicsDebug.Flags =   FarseerPhysics.DebugViewFlags.DebugPanel | FarseerPhysics.DebugViewFlags.PerformanceGraph |
-                                        DebugViewFlags.Shape | DebugViewFlags.PolygonPoints | DebugViewFlags.ContactPoints;
-            this.physicsDebug.LoadContent(this.ScreenManager.Game.GraphicsDevice, this.ScreenManager.Content);
-
-            foreach (IDGSprite sprite in this.background)
-                sprite.LoadContent(this.ScreenManager.Content);
-
-            lock (this.physics)
+            this.gamePhysic = new World(Vector2.Zero);
+            this.viewnDebug  = new DebugViewXNA(this.gamePhysic)
             {
-                this.physicsProj = Matrix.CreateOrthographicOffCenter(0, ConvertUnits.ToSimUnits(vport.Width), ConvertUnits.ToSimUnits(vport.Height), 0, 0, 1);
-                this.physicsView = Matrix.Identity;
+                Flags = DebugViewFlags.DebugPanel | DebugViewFlags.PerformanceGraph | DebugViewFlags.Shape,
+            };
+            this.viewnDebug.LoadContent(this.ScreenManager.GraphicsDevice, this.ScreenManager.Content);
 
-                float w = ConvertUnits.ToSimUnits(vport.Width - 1);
-                float h = ConvertUnits.ToSimUnits(vport.Height - 1);
+            this.randomizer = new Random(11043849 / DateTime.Now.Millisecond);
 
-                Vertices verts = new Vertices(4);
-                verts.Add(new Vector2(0, 0));
-                verts.Add(new Vector2(0, h));
-                verts.Add(new Vector2(w, h));
-                verts.Add(new Vector2(w, 0));
+            lock (this.gamePhysic)
+            {
+                Viewport gameView = this.ScreenManager.GraphicsDevice.Viewport;
 
-                this.borderPhysics = BodyFactory.CreateLoopShape(this.physics, verts);
-                this.borderPhysics.CollisionCategories = Category.All;
-                this.borderPhysics.CollidesWith = Category.All;
+                this.projMatrix = Matrix.CreateOrthographicOffCenter(0,
+                                                                     ConvertUnits.ToSimUnits(gameView.Width),
+                                                                     ConvertUnits.ToSimUnits(gameView.Height),
+                                                                     0,
+                                                                     0,
+                                                                     1);
 
-                base.LoadContent();
+                float w = ConvertUnits.ToSimUnits(gameView.Width - 1);
+                float h = ConvertUnits.ToSimUnits(gameView.Height - 1);
+
+                Vertices borderVerts = new Vertices(4);
+                borderVerts.Add(new Vector2(0, 0));
+                borderVerts.Add(new Vector2(0, h));
+                borderVerts.Add(new Vector2(w, h));
+                borderVerts.Add(new Vector2(w, 0));
+
+                this.gameBorder = BodyFactory.CreateLoopShape(this.gamePhysic, borderVerts);
+                this.gameBorder.CollisionCategories = Category.All;
+                this.gameBorder.CollidesWith = Category.All;
 
                 this.player = new DGPlayer();
-                this.player.LoadContent(this.ScreenManager.Content, this.physics);
+                this.player.LoadContent(this.ScreenManager.Content, this.gamePhysic);
 
-                this.player.Location = new Vector2(vport.Width / 2, vport.Height / 2);
-
-                this.rand = new Random(11043849 / DateTime.Now.Millisecond);
+                this.player.EntityLocation = new Vector2(gameView.Width / 2, gameView.Height / 2);
             }
+
+            base.LoadContent();
         }
-        public      override void   UnloadContent   ()
+        public      override void UnloadContent ()
         {
-            foreach (IDGSprite sprite in this.background)
-                sprite.UnloadContent();
-
-            foreach (DGTarget target in this.targets)
-                target.UnloadContent();
-
-            foreach (DGEnemy enemy in this.enemies)
-                enemy.UnloadContent();
-
-            foreach (DGNutrient nutrient in this.powerup)
-                nutrient.UnloadContent();
-
             this.player.UnloadContent();
+            this.pausMenu.UnloadContent();
+
+            this.viewnDebug.Dispose();
         }
 
-        public      override void   HandleInput     (GameTime gametime, DGInput input)
+        public      override void HandleInput   (GameTime gametime, DGInput input)
         {
-            if (this.pause.Evaluate(input))
+            if (this.pausInput.Evaluate(input))
             {
-                this.ScreenManager.AddScreen(this.menupause);
-
-                this.showdebugphysics = false;
+                this.ScreenManager.AddScreen(this.pausMenu);
+                this.physicsDebugShown = false;
             }
 
-            if (this.debugphysics.Evaluate(input))
-                this.showdebugphysics = this.showdebugphysics ? false : true;
+            if (this.physicsInput.Evaluate(input))
+                this.physicsDebugShown = this.physicsDebugShown ? false : true;
 
             this.player.HandleInput(gametime, input);
         }
 
-        public      override void   Update          (GameTime gametime)
+        public      override void Update        (GameTime gametime)
         {
-            foreach (IDGSprite sprite in this.background)
-                sprite.Update(gametime);
+            this.gameBackground.Update(gametime);
 
-            lock (this.physics)
+            lock (this.gamePhysic)
             {
-                if (this.player.dead)
-                {
-                    this.ScreenManager.RemoveScreen(this);
-                    this.ScreenManager.AddScreen(new MenuOver((this.score / 2) * (int)this.gameperiod));
-                }
+                this.gamePhysic.Step(Math.Min((float)gametime.ElapsedGameTime.TotalSeconds, 1 / 30f));
 
-                this.physics.Step(Math.Min((float)gametime.ElapsedGameTime.TotalMilliseconds * 0.001f, 1 / 30f));
+                this.UpdateEntityLifecycle  (gametime);
+                this.CleanupEntities        (gametime);
+
+                this.CreateEntities         (gametime);
+                this.UpdateEntities         (gametime);
 
                 this.player.Update(gametime);
-
-                this.targetElapsedTime += (float)gametime.ElapsedGameTime.TotalSeconds;
-                this.enemyElapsedTime += (float)gametime.ElapsedGameTime.TotalSeconds;
-                this.pwerpElapsedTime += (float)gametime.ElapsedGameTime.TotalSeconds;
-
-                this.gameperiod += (float)gametime.ElapsedGameTime.TotalSeconds;
-
-                for (int i = 0; i < this.targets.Count; i++)
-                    if (this.targets[i].isdead)
-                    {
-                        this.physics.RemoveBody(this.targets[i].physics);
-                        this.targets.RemoveAt(i);
-
-                        if (this.targets.Count < 30)
-                        {
-                            DGTarget newTarget = new DGTarget(this.rand);
-                            newTarget.LoadContent(this.ScreenManager.Content, this.physics);
-
-                            this.targets.Add(newTarget);
-                        }
-                    }
-
-                for (int i = 0; i < this.enemies.Count; i++)
-                    if (this.enemies[i].dead)
-                    {
-                        this.physics.RemoveBody(this.enemies[i].physics);
-                        this.enemies.RemoveAt(i);
-
-                        if (this.enemies.Count < 10)
-                        {
-                            DGEnemy newEnemy = new DGEnemy(this.rand);
-                            newEnemy.LoadContent(this.ScreenManager.Content, this.physics);
-
-                            this.enemies.Add(newEnemy);
-                        }
-                    }
-
-                for (int i = 0; i < this.powerup.Count; i++)
-                    if (this.powerup[i].dead)
-                    {
-                        this.physics.RemoveBody(this.powerup[i].physics);
-                        this.powerup.RemoveAt(i);
-                    }
-
-                if (this.targetElapsedTime >= (60 / 20) && this.targets.Count <= 20)
-                {
-                    DGTarget newTarget = new DGTarget(this.rand);
-                    newTarget.LoadContent(this.ScreenManager.Content, this.physics);
-
-                    this.targets.Add(newTarget);
-
-                    this.targetElapsedTime = 0;
-                }
-
-                if (this.enemyElapsedTime >= (60 / 10) && this.enemies.Count <= 5)
-                {
-                    DGEnemy newEnemy = new DGEnemy(this.rand);
-                    newEnemy.LoadContent(this.ScreenManager.Content, this.physics);
-
-                    this.enemies.Add(newEnemy);
-
-                    this.enemyElapsedTime = 0;
-                }
-
-                if (this.pwerpElapsedTime >= 10 && this.powerup.Count <= 2)
-                {
-                    DGNutrient newNutrient = new DGNutrient(this.rand);
-                    newNutrient.LoadContent(this.ScreenManager.Content, this.physics);
-
-                    this.powerup.Add(newNutrient);
-
-                    this.pwerpElapsedTime = 0;
-                }
-
-                foreach (DGTarget target in this.targets)
-                {
-                    target.Update(gametime);
-
-                    if (target.Bounds.Intersects(this.player.Bounds) && !target.isinfected)
-                    {
-                        target.Infected();
-
-                        this.score += 50;
-                    }
-                }
-
-                foreach (DGEnemy enemy in this.enemies)
-                {
-                    enemy.Update(gametime);
-
-                    if (enemy.Bounds.Intersects(this.player.Bounds))
-                    {
-                        this.player.Damage();
-                        enemy.Damage();
-                    }
-
-                    foreach (DGTarget target in this.targets)
-                    {
-                        if (enemy.Bounds.Intersects(target.Bounds) && target.isinfected)
-                        {
-                            target.Damage();
-                            enemy.Damage();
-                        }
-                    }
-                }
-
-                foreach (DGNutrient nutrient in this.powerup)
-                {
-                    nutrient.Update(gametime);
-
-                    if (nutrient.Bounds.Intersects(this.player.Bounds))
-                    {
-                        this.player.Repair();
-                        nutrient.Kill();
-                    }
-                }
             }
         }
-        public      override void   Render          (SpriteBatch batch)
+        public      override void Render        (SpriteBatch batch)
         {
-            foreach (IDGSprite sprite in this.background)
-                sprite.Render(batch);
+            this.gameBackground.Render(batch);
 
-            foreach (DGTarget target in this.targets)
-                target.Render(batch);
+            foreach (DGRedCell cell in this.redCells)
+                cell.Render(batch);
 
-            foreach (DGEnemy enemy in this.enemies)
-                enemy.Render(batch);
+            foreach (DGPowCell cell in this.powCells)
+                cell.Render(batch);
 
-            foreach (DGNutrient nutrient in this.powerup)
-                nutrient.Render(batch);
+            foreach (DGWhtCell cell in this.whtCells)
+                cell.Render(batch);
 
             this.player.Render(batch);
 
             batch.End();
 
-            lock (this.physics)
+            lock (this.gamePhysic)
             {
-                if (this.showdebugphysics)
-                    this.physicsDebug.RenderDebugData(ref this.physicsProj, ref this.physicsView);
+                if (this.physicsDebugShown)
+                    this.viewnDebug.RenderDebugData(ref this.projMatrix);
             }
 
             batch.Begin();
+        }
 
-            batch.DrawString(this.font, string.Format("Life: {0}/10", this.player.Life), new Vector2(40, 40), this.player.Life > 2 ? Color.Black : Color.Red);
-            batch.DrawString(this.font, string.Format("Score: {0}", (this.score / 2) * (int)this.gameperiod), new Vector2(40, 80), Color.Black);
+
+        void UpdateEntityLifecycle  (GameTime gametime)
+        {
+            this.redElapsed += (float)gametime.ElapsedGameTime.TotalSeconds;
+            this.whtElapsed += (float)gametime.ElapsedGameTime.TotalSeconds;
+            this.powElapsed += (float)gametime.ElapsedGameTime.TotalSeconds;
+
+            this.totElapsed += (float)gametime.ElapsedGameTime.TotalSeconds;
+        }
+        void CleanupEntities        (GameTime gametime)
+        {
+            for (int i = 0; i < this.redCells.Count; i++)
+            {
+                DGRedCell redCell = this.redCells[i];
+
+                if (redCell.EntityDead)
+                {
+                    this.gamePhysic.RemoveBody(redCell.EntityPhysics);
+                    this.redCells.RemoveAt(i);
+
+                    if (this.redCells.Count < 30)
+                    {
+                        redCell = new DGRedCell(this.randomizer);
+                        redCell.LoadContent(this.ScreenManager.Content, this.gamePhysic);
+
+                        this.redCells.Add(redCell);
+                    }
+                }
+            }
+
+            for (int i = 0; i < this.whtCells.Count; i++)
+            {
+                DGWhtCell whtCell = this.whtCells[i];
+
+                if (whtCell.EntityDead)
+                {
+                    this.gamePhysic.RemoveBody(whtCell.EntityPhysics);
+                    this.whtCells.RemoveAt(i);
+
+                    if (this.redCells.Count < 5)
+                    {
+                        whtCell = new DGWhtCell(this.randomizer);
+                        whtCell.LoadContent(this.ScreenManager.Content, this.gamePhysic);
+
+                        this.whtCells.Add(whtCell);
+                    }
+                }
+            }
+
+            for (int i = 0; i < this.powCells.Count; i++)
+            {
+                DGPowCell powCell = this.powCells[i];
+
+                if (powCell.EntityDead)
+                {
+                    this.gamePhysic.RemoveBody(powCell.EntityPhysics);
+                    this.powCells.RemoveAt(i);
+                }
+            }
+        }
+
+        void CreateEntities         (GameTime gametime)
+        {
+            if (this.redElapsed >= (60 / 30) && this.redCells.Count < 15)
+            {
+                DGRedCell cell = new DGRedCell(this.randomizer);
+                cell.LoadContent(this.ScreenManager.Content, this.gamePhysic);
+
+                this.redCells.Add(cell);
+
+                this.redElapsed = 0;
+            }
+
+            if (this.whtElapsed >= (60 / 5) && this.whtCells.Count < 5)
+            {
+                DGWhtCell cell = new DGWhtCell(this.randomizer);
+                cell.LoadContent(this.ScreenManager.Content, this.gamePhysic);
+
+                this.whtCells.Add(cell);
+
+                this.whtElapsed = 0;
+            }
+
+            if (this.powElapsed >= (60 / 4) && this.powCells.Count < 2 && this.player.WastedLife > 1)
+            {
+                DGPowCell cell = new DGPowCell(this.randomizer);
+                cell.LoadContent(this.ScreenManager.Content, this.gamePhysic);
+
+                this.powCells.Add(cell);
+
+                this.powElapsed = 0;
+            }
+        }
+        void UpdateEntities         (GameTime gametime)
+        {            
+            foreach (DGWhtCell cell in this.whtCells)
+            {
+                cell.Update(gametime);
+
+                if (cell.EntityBounds.Intersects(this.player.EntityBounds))
+                {
+                    this.player.Damage();
+                    cell.Damage();
+                }
+            }
+
+            foreach (DGRedCell cell in this.redCells)
+            {
+                cell.Update(gametime);
+
+                if (cell.EntityBounds.Intersects(this.player.EntityBounds) && !cell.CellInfected)
+                {
+                    cell.Infect();
+                }
+
+                foreach (DGWhtCell wcell in this.whtCells)
+                {
+                    if (cell.EntityBounds.Intersects(wcell.EntityBounds) && cell.CellInfected)
+                    {
+                        cell.Damage();
+                        wcell.Damage();
+                    }
+                }
+            }
+
+            foreach (DGPowCell cell in this.powCells)
+            {
+                cell.Update(gametime);
+
+                if (cell.EntityBounds.Intersects(this.player.EntityBounds))
+                {
+                    cell.Eaten();
+                    this.player.Healed();
+                }
+            }
         }
     }
 }

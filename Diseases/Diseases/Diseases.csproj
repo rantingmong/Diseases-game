@@ -83,10 +83,10 @@
   <ItemGroup>
     <Compile Include="DiseasesGame.cs" />
     <Compile Include="Entity\Base\DGEntity.cs" />
-    <Compile Include="Entity\DGEnemy.cs" />
-    <Compile Include="Entity\DGNutrient.cs" />
+    <Compile Include="Entity\DGPowCell.cs" />
+    <Compile Include="Entity\DGWhtCell.cs" />
     <Compile Include="Entity\DGPlayer.cs" />
-    <Compile Include="Entity\DGTarget.cs" />
+    <Compile Include="Entity\DGRedCell.cs" />
     <Compile Include="Physics\ConvertUnits.cs" />
     <Compile Include="Physics\DebugViewXNA.cs" />
     <Compile Include="Physics\PrimitiveBatch.cs" />
@@ -108,9 +108,8 @@
     <Compile Include="Screen\Menu\MenuExit.cs" />
     <Compile Include="Screen\Menu\MenuHigh.cs" />
     <Compile Include="Screen\Menu\MenuMain.cs" />
+    <Compile Include="Screen\Menu\MenuTutt.cs" />
     <Compile Include="Screen\Other\DGScreenLoad.cs" />
-    <Compile Include="Util\DGHighScore.cs" />
-    <Compile Include="Util\DGSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Farseer Physics\Farseer Physics XNA.csproj">
@@ -152,6 +151,9 @@
   <ItemGroup>
     <Content Include="icon 48.png" />
     <Content Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Util\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />

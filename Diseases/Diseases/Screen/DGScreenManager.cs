@@ -11,8 +11,8 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Diseases.Input;
 using Diseases.Graphics;
+
 using Diseases.Screen.Other;
-using Diseases.Physics;
 
 namespace Diseases.Screen
 {
@@ -47,7 +47,6 @@ namespace Diseases.Screen
         }
 
         List<DGScreen>              tempscreens     = new List<DGScreen>();
-
 
         public                      DGScreenManager (DiseasesGame game)
             : base(game)

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
+
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 
 using Diseases.Input;
@@ -15,41 +17,35 @@ using FarseerPhysics.Factories;
 
 namespace Diseases.Entity
 {
-    public class DGNutrient : DGEntity
+    public class DGPowCell : DGEntity
     {
-        public bool dead = false;
+        Random      randomizer;
+        Vector2     forceVector;
 
-        Random randomizer;
-
-        Vector2 fVector = Vector2.Zero;
-
-        public DGNutrient(Random randomizer)
+        public                      DGPowCell   (Random randomizer)
         {
             this.randomizer = randomizer;
         }
-        protected override void Initialize()
+        protected   override void   Initialize  ()
         {
             this.restitution = 1.5f;
             this.speed = 4;
+
+            this.sprite = new DGSpriteAnimat("entities/powerup/idle", 10, 8);
         }
 
-        public override void LoadContent(ContentManager content, World physics)
+        public      override void   LoadContent (ContentManager content, World physics)
         {
-            this.sprite = new DGSpriteAnimat("entities/powerup/idle", 20, 8);
-
             base.LoadContent(content, physics);
-
-            this.physics.Position = ConvertUnits.ToSimUnits(new Vector2(randomizer.Next(40, 760), randomizer.Next(40, 500)));
-            this.physics.ApplyLinearImpulse(new Vector2(this.speed * (float)Math.Cos(randomizer.Next()), this.speed * (float)Math.Sin(randomizer.Next())));
 
             this.physics.CollisionCategories = Category.Cat4;
             this.physics.CollidesWith = Category.Cat4;
 
-            this.bounds.X = (int)ConvertUnits.ToDisplayUnits(this.physics.Position.X);
-            this.bounds.Y = (int)ConvertUnits.ToDisplayUnits(this.physics.Position.Y);
+            this.physics.Position = ConvertUnits.ToSimUnits(new Vector2(randomizer.Next(40, 760), randomizer.Next(40, 500)));
+            this.physics.ApplyLinearImpulse(new Vector2((float)Math.Cos(randomizer.Next()), (float)Math.Sin(randomizer.Next())) * this.speed);
         }
 
-        public override void Update(GameTime gametime)
+        public      override void   Update      (GameTime gametime)
         {
             base.Update(gametime);
 
@@ -66,13 +62,13 @@ namespace Diseases.Entity
             else
                 fy = fy - (this.speed + fy);
 
-            this.fVector.X = fx;
-            this.fVector.Y = fy;
+            this.forceVector.X = fx;
+            this.forceVector.Y = fy;
 
-            this.physics.LinearVelocity = this.fVector;   
+            this.physics.LinearVelocity = this.forceVector;
         }
 
-        public void Kill()
+        public void Eaten()
         {
             this.dead = true;
         }
