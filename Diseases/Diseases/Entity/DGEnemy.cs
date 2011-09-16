@@ -34,8 +34,9 @@ namespace Diseases.Entity
         protected override void Initialize()
         {
             this.restitution = 1.5f;
-            this.speed = 1.5f;
+            this.speed = 1;
             this.sprite = new DGSpriteStatic("entities/enemy/idle");
+            this.sprite.Scale = new Vector2(1.5f);
         }
 
         public override void LoadContent(ContentManager content, World physics)
@@ -69,7 +70,7 @@ namespace Diseases.Entity
                 this.sprite.Tint = Color.Yellow;
 
             if (this.damagecounter == 8)
-                this.sprite.Tint = Color.Green;
+                this.sprite.Tint = Color.Orange;
 
             if (this.damagecounter == 10)
                 this.dead = true;
