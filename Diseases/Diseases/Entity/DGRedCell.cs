@@ -19,7 +19,9 @@ namespace Diseases.Entity
 {
     public class DGRedCell : DGEntity
     {
-        bool            cellInfected = false;
+        float           cellLife        = 0;
+
+        bool            cellInfected    = false;
         public  bool    CellInfected
         {
             get { return this.cellInfected; }
@@ -37,14 +39,15 @@ namespace Diseases.Entity
         protected   override void   Initialize      ()
         {
             this.restitution = 2;
+            this.maxLife = 3;
             this.speed = 2;
         }
 
         public      override void   LoadContent     (ContentManager content, World physics)
         {
-            int rotationSpeed = randomizer.Next(20, 60);
+            int rotationSpeed = randomizer.Next(10, 30);
 
-            this.sprite = new DGSpriteAnimat("entities/target/idle", rotationSpeed, 12);
+            this.sprite         = new DGSpriteAnimat("entities/target/idle", rotationSpeed, 12);
             this.infectedSprite = new DGSpriteAnimat("entities/target/inft", rotationSpeed, 12);
 
             this.infectedSprite.LoadContent(content);
@@ -67,9 +70,12 @@ namespace Diseases.Entity
         {
             base.Update(gametime);
 
+            if (this.cellInfected)
+                this.cellLife += (float)gametime.ElapsedGameTime.TotalSeconds;
+
             this.ConstrainPhysics();
 
-            if (this.wastedLife == 1)
+            if (this.wastedLife == 1 || this.cellLife >= 10)
             {
                 this.sprite.Tint = Color.Yellow;
 
@@ -77,10 +83,10 @@ namespace Diseases.Entity
                 this.speed = 1;
             }
 
-            if (this.wastedLife == 2)
+            if (this.wastedLife == 2 || this.cellLife >= 15)
                 this.sprite.Tint = Color.LightGreen;
 
-            if (this.wastedLife == 3)
+            if (this.cellLife >= 20)
                 this.dead = true;
         }
 

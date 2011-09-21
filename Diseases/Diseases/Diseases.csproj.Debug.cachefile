@@ -1,6 +1,6 @@
 Content\Backgrounds\menu\exit.xnb
 Content\Backgrounds\null.xnb
-Content\Backgrounds\errr.xnb
+Content\Backgrounds\stop.xnb
 Content\Backgrounds\load.xnb
 Content\Entities\null.xnb
 Content\Backgrounds\menu\main.xnb
@@ -21,12 +21,17 @@ Content\Entities\menuentries\quit.xnb
 Content\Entities\menuentries\resm.xnb
 Content\Entities\target\inft.xnb
 Content\Backgrounds\menu\over.xnb
-Content\Sounds\crashsound.xnb
+Content\Shaders\FadeEffect.xnb
 Content\Sounds\buttonpress.xnb
 Content\Sounds\canceled.xnb
 Content\Sounds\bump.xnb
 Content\Sounds\ouch.xnb
 Content\Sounds\health.xnb
-Content\Shaders\FadeEffect.xnb
 Content\Fonts\DebugFont.xnb
 Content\Fonts\GameFont.xnb
+Content\Sounds\Music\crash.xnb
+Content\Sounds\Music\failed.xnb
+Content\Sounds\Music\tutorial.xnb
+Content\Sounds\Music\crash.wma
+Content\Sounds\Music\failed.wma
+Content\Sounds\Music\tutorial.wma

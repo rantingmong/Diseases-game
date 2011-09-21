@@ -37,6 +37,7 @@ namespace Diseases.Entity
         protected   override void   Initialize  ()
         {
             this.restitution = 1.5f;
+            this.maxLife = 10;
             this.speed = 3;
 
             this.sprite = new DGSpriteAnimat("entities/bacteria/idle", 8, 10);
@@ -103,9 +104,6 @@ namespace Diseases.Entity
                 this.sprite.Tint = Color.LightGreen;
                 this.speed = 2;
             }
-
-            if (this.wastedLife == 10)
-                this.dead = true;
 
             this.wastedLife = (int)MathHelper.Clamp(this.wastedLife, 0, 10);
 

@@ -39,7 +39,7 @@ namespace Diseases
 
         private string                  crshmessage     = "";
 
-        private SoundEffect             crashSound;
+        private Song                    crashSong;
 
         private SpriteBatch             spriteBatch;
         private GraphicsDeviceManager   graphicsManager;
@@ -66,12 +66,14 @@ namespace Diseases
         {
             try
             {
-                this.crashSprite = new DGSpriteStatic("backgrounds/errr");
+                this.crashSprite = new DGSpriteStatic("backgrounds/stop");
                 this.screenmanager = new DGScreenManager(this);
 
                 this.Components.Add(this.screenmanager);
 
                 this.screenmanager.AddScreen(this.menumain);
+
+                base.Initialize();
             }
             catch (Exception ex)
             {
@@ -82,8 +84,6 @@ namespace Diseases
 
                 this.gamecrashed = true;
             }
-
-            base.Initialize();
         }
 
         protected override void         LoadContent     ()
@@ -92,10 +92,12 @@ namespace Diseases
             {
                 this.Content.RootDirectory = "content";
 
-                this.crashSprite.LoadContent(this.Content);
-                this.crashSound = this.Content.Load<SoundEffect>("sounds/crashsound");
-
                 this.spriteBatch = new SpriteBatch(this.GraphicsDevice);
+                
+                this.crashSprite.LoadContent(this.Content);
+                this.crashSong  = this.Content.Load<Song>("sounds/music/crash");
+
+                base.LoadContent();
             }
             catch (Exception ex)
             {
@@ -106,17 +108,17 @@ namespace Diseases
 
                 this.gamecrashed = true;
             }
-
-            base.LoadContent();
         }
         protected override void         UnloadContent   ()
         {
             try
             {
                 this.crashSprite.UnloadContent();
-                this.crashSound.Dispose();
+                this.crashSong.Dispose();
 
                 this.menumain.UnloadContent();
+
+                base.UnloadContent();
             }
             catch (Exception ex)
             {
@@ -127,8 +129,6 @@ namespace Diseases
 
                 this.gamecrashed = true;
             }
-
-            base.UnloadContent();
         }
 
         protected override void         Update          (GameTime gameTime)
@@ -156,7 +156,7 @@ namespace Diseases
 
                 if (!this.musicplayed)
                 {
-                    this.crashSound.Play();
+                    MediaPlayer.Play(this.crashSong);
 
                     this.musicplayed = true;
                 }

@@ -33,10 +33,16 @@ namespace Diseases.Entity
             get { return this.physics; }
         }
 
-        protected   int         wastedLife            = 0;
+        protected   int         wastedLife      = 0;
         public      int         WastedLife
         {
             get { return this.wastedLife; }
+        }
+
+        protected   int         maxLife         = 10;
+        public      int         MaxLife
+        {
+            get { return this.maxLife; }
         }
 
         protected   bool        dead            = false;
@@ -104,6 +110,11 @@ namespace Diseases.Entity
             this.sprite.Update(gametime);
 
             this.cooldownElapsed += (float)gametime.ElapsedGameTime.TotalSeconds;
+
+            this.wastedLife = (int)MathHelper.Clamp(this.wastedLife, 0, this.maxLife);
+
+            if (this.wastedLife == this.maxLife)
+                this.dead = true;
 
             if (this.cooldownElapsed > this.cooldownTotal)
             {

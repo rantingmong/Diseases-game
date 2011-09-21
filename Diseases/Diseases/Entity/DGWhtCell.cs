@@ -51,14 +51,11 @@ namespace Diseases.Entity
 
             this.ConstrainPhysics();
 
-            if (this.wastedLife == 5)
+            if (this.wastedLife == 8)
                 this.sprite.Tint = Color.Orange;
 
-            if (this.wastedLife == 10)
+            if (this.wastedLife == 13)
                 this.sprite.Tint = Color.LightGreen;
-
-            if (this.wastedLife == 15)
-                this.dead = true;
         }
 
         public      void            Damage      ()

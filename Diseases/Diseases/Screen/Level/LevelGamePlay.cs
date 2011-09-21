@@ -20,8 +20,18 @@ using FarseerPhysics.Factories;
 
 namespace Diseases.Screen.Level
 {
+    public enum GameState
+    {
+        Paused  ,
+        Playing ,
+        Tutorial,
+        Gamelost,
+    }
+
     public class LevelGamePlay : DGScreen
     {
+        GameState           gameState;
+
         Random              randomizer;
 
         Body                gameBorder;
@@ -66,6 +76,8 @@ namespace Diseases.Screen.Level
 
         public      override void LoadContent   ()
         {
+            this.gameState = GameState.Tutorial;
+
             this.gameBackground.LoadContent(this.ScreenManager.Content);
 
             this.gamePhysic = new World(Vector2.Zero);
@@ -123,6 +135,8 @@ namespace Diseases.Screen.Level
             {
                 this.ScreenManager.AddScreen(this.pausMenu);
                 this.physicsDebugShown = false;
+
+                this.gameState = GameState.Paused;
             }
 
             if (this.physicsInput.Evaluate(input))
@@ -173,7 +187,6 @@ namespace Diseases.Screen.Level
 
             batch.Begin();
         }
-
 
         void UpdateEntityLifecycle  (GameTime gametime)
         {
@@ -247,7 +260,7 @@ namespace Diseases.Screen.Level
                 this.redElapsed = 0;
             }
 
-            if (this.whtElapsed >= (60 / 5) && this.whtCells.Count < 5)
+            if (this.whtElapsed >= (60 / 10) && this.whtCells.Count < 5)
             {
                 DGWhtCell cell = new DGWhtCell(this.randomizer);
                 cell.LoadContent(this.ScreenManager.Content, this.gamePhysic);

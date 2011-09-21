@@ -45,7 +45,9 @@ namespace Diseases.Screen.Menu
             get { return this.background; }
         }
 
-        public                      DGMenuScreen      (string menuname)
+        public event EventHandler   MenuCanceled;
+
+        public                      DGMenuScreen    (string menuname)
         {
             this.menuname = menuname;
             this.tempmenu = new List<DGMenuEntry>();
@@ -206,7 +208,12 @@ namespace Diseases.Screen.Menu
             }
 
             if (menuEx.Evaluate(input))
+            {
                 OnCancel();
+
+                if (this.MenuCanceled != null)
+                    this.MenuCanceled(this, EventArgs.Empty);
+            }
         }
 
         public override void        Update          (GameTime gametime)
