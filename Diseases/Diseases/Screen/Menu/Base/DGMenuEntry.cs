@@ -27,6 +27,9 @@ namespace Diseases.Entity
             {
                 this.location = value;
                 this.sprite.Location = value;
+
+                this.bounds.X = (int)value.X;
+                this.bounds.Y = (int)value.Y;
             }
         }
 
@@ -35,6 +38,12 @@ namespace Diseases.Entity
         {
             get { return this.sprite; }
             set { this.sprite = value; }
+        }
+
+        Rectangle bounds;
+        public Rectangle Bounds
+        {
+            get { return this.bounds; }
         }
 
         public event EventHandler<EventArgs> Selected;
@@ -58,6 +67,8 @@ namespace Diseases.Entity
         public void LoadContent(ContentManager content)
         {
             this.sprite.LoadContent(content);
+
+            this.bounds = new Rectangle((int)this.location.X, (int)this.location.Y, this.sprite.Texture.Width, this.sprite.Texture.Height);
         }
         public void UnloadContent()
         {

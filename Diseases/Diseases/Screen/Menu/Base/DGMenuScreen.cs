@@ -121,6 +121,16 @@ namespace Diseases.Screen.Menu
 
         public override void        HandleInput     (GameTime gametime, DGInput input)
         {
+            foreach (DGMenuEntry entry in this.menus)
+            {
+                if (input.TestLocation(entry.Bounds))
+                {
+                    this.selectedentry = this.menus.IndexOf(entry);
+
+                    break;
+                }
+            }
+
             if (this.menus.Count > 1)
             {
                 bool navikeypress = false;
@@ -201,12 +211,12 @@ namespace Diseases.Screen.Menu
                 }
             }
 
-            if (menuSt.Evaluate(input) && this.menus.Count > 1)
+            if (menuSt.Evaluate(input) && this.menus.Count > 1 || input.TestLeftButton())
             {
                 this.buttonMove.Play();
                 OnSelect(this.selectedentry);
             }
-
+            
             if (menuEx.Evaluate(input))
             {
                 OnCancel();

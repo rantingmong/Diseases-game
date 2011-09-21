@@ -50,6 +50,8 @@ namespace Diseases
 
         public                          DiseasesGame    ()
         {
+            this.IsMouseVisible = true;
+
             this.graphicsManager = new GraphicsDeviceManager(this);
 
             this.graphicsManager.PreferMultiSampling = true;

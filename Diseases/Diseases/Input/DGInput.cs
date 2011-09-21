@@ -12,6 +12,7 @@ namespace Diseases.Input
         public KeyboardState OldKeyboardState;
 
         public MouseState CurMouseState;
+        public MouseState OldMouseState;
 
         public void Sync                ()
         {
@@ -22,6 +23,7 @@ namespace Diseases.Input
         public void Update              (GameTime gametime)
         {
             OldKeyboardState = CurKeyboardState;
+            OldMouseState = CurMouseState;
 
             CurKeyboardState = Keyboard.GetState();
             CurMouseState = Mouse.GetState();
@@ -47,21 +49,20 @@ namespace Diseases.Input
 
         public bool TestLocation        (Rectangle rectangle)
         {
-            return (rectangle.Left <= CurMouseState.X) && (rectangle.Right >= CurMouseState.X) ||
-                    (rectangle.Top <= CurMouseState.X) && (rectangle.Bottom >= CurMouseState.Y);
+            return rectangle.Contains(new Point(CurMouseState.X, CurMouseState.Y));
         }
 
         public bool TestLeftButton      ()
         {
-            return CurMouseState.LeftButton == ButtonState.Pressed ? true : false;
+            return CurMouseState.LeftButton == ButtonState.Pressed && OldMouseState.LeftButton == ButtonState.Released;
         }
         public bool TestRightButton     ()
         {
-            return CurMouseState.RightButton == ButtonState.Pressed ? true : false;
+            return CurMouseState.RightButton == ButtonState.Pressed && OldMouseState.RightButton == ButtonState.Released;
         }
         public bool TestCenterButton    ()
         {
-            return CurMouseState.MiddleButton == ButtonState.Pressed ? true : false;
+            return CurMouseState.MiddleButton == ButtonState.Pressed && OldMouseState.MiddleButton == ButtonState.Released;
         }
     }
 }

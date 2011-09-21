@@ -17,7 +17,7 @@
     <XnaCrossPlatformGroupID>44ebcb5a-bbdb-41b8-9372-9ae0c954d86d</XnaCrossPlatformGroupID>
     <XnaOutputType>Game</XnaOutputType>
     <ApplicationIcon>icon.ico</ApplicationIcon>
-    <Thumbnail>icon 48.png</Thumbnail>
+    <Thumbnail>icon 64.png</Thumbnail>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -151,7 +151,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="icon 48.png" />
+    <Content Include="icon 64.png" />
     <Content Include="icon.ico" />
   </ItemGroup>
   <ItemGroup />
