@@ -32,7 +32,9 @@ namespace Diseases
 
     public class DiseasesGame : Game
     {
-        MenuMain menumain = new MenuMain();
+        MenuMain                        menumain        = new MenuMain();
+
+        SamplerState                    samplerState    = new SamplerState();
 
         private bool                    musicplayed     = false;
         private bool                    gamecrashed     = false;
@@ -40,6 +42,7 @@ namespace Diseases
         private string                  crshmessage     = "";
 
         private Song                    crashSong;
+        private SpriteFont              debugFont;
 
         private SpriteBatch             spriteBatch;
         private GraphicsDeviceManager   graphicsManager;
@@ -95,11 +98,17 @@ namespace Diseases
                 this.Content.RootDirectory = "content";
 
                 this.spriteBatch = new SpriteBatch(this.GraphicsDevice);
-                
+
+                this.samplerState.Filter = TextureFilter.Linear;
+
                 this.crashSprite.LoadContent(this.Content);
                 this.crashSong  = this.Content.Load<Song>("sounds/music/crash");
 
+                this.debugFont = this.Content.Load<SpriteFont>("fonts/debugfont");
+
                 base.LoadContent();
+
+                this.GraphicsDevice.SamplerStates[0] = this.samplerState;
             }
             catch (Exception ex)
             {
@@ -179,6 +188,12 @@ namespace Diseases
                     this.GraphicsDevice.Clear(Color.Black);
 
                     base.Draw(gameTime);
+
+                    this.spriteBatch.Begin();
+
+                    this.spriteBatch.DrawString(this.debugFont, string.Format("FPS: {0}", Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds, 0)), new Vector2(20, 510), Color.Black);
+
+                    this.spriteBatch.End();
                 }
                 catch (Exception ex)
                 {

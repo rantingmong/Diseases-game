@@ -16,8 +16,10 @@ namespace Diseases.Screen.Menu
     public class DGMenuScreen : DGScreen
     {
         int                         selectedentry   = 0;
- 
-        SoundEffect                 buttonMove;
+        bool                        focusPlayed     = false;
+
+        SoundEffect                 buttonPress;
+        SoundEffect                 buttonFocus;
 
         DGInputAction               menuUp;
         DGInputAction               menuLf;
@@ -98,7 +100,8 @@ namespace Diseases.Screen.Menu
 
         public override void        LoadContent     ()
         {
-            this.buttonMove = this.ScreenManager.Content.Load<SoundEffect>("sounds/buttonpress");
+            this.buttonFocus = this.ScreenManager.Content.Load<SoundEffect>("sounds/menu_focus");
+            this.buttonPress = this.ScreenManager.Content.Load<SoundEffect>("sounds/buttonpress");
 
             foreach (DGMenuEntry menu in this.menus)
                 menu.LoadContent(this.ScreenManager.Content);
@@ -116,20 +119,32 @@ namespace Diseases.Screen.Menu
             foreach (IDGSprite background in this.background)
                 background.UnloadContent();
 
-            this.buttonMove.Dispose();
+            this.buttonPress.Dispose();
         }
 
         public override void        HandleInput     (GameTime gametime, DGInput input)
         {
+            int prevSelect = this.selectedentry;
+
             foreach (DGMenuEntry entry in this.menus)
             {
                 if (input.TestLocation(entry.Bounds))
                 {
                     this.selectedentry = this.menus.IndexOf(entry);
 
+                    if (!this.focusPlayed)
+                    {
+                        this.buttonFocus.Play();
+
+                        this.focusPlayed = true;
+                    }
+
                     break;
                 }
             }
+
+            if(prevSelect != this.selectedentry)
+                this.focusPlayed = false;
 
             if (this.menus.Count > 1)
             {
@@ -211,9 +226,9 @@ namespace Diseases.Screen.Menu
                 }
             }
 
-            if (menuSt.Evaluate(input) && this.menus.Count > 1 || input.TestLeftButton())
+            if (menuSt.Evaluate(input) && this.menus.Count > 1 || (input.TestLeftButton() && input.TestLocation(this.menus[this.selectedentry].Bounds)))
             {
-                this.buttonMove.Play();
+                this.buttonPress.Play();
                 OnSelect(this.selectedentry);
             }
             

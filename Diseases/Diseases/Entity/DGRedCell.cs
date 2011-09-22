@@ -70,7 +70,7 @@ namespace Diseases.Entity
         {
             base.Update(gametime);
 
-            if (this.cellInfected)
+            if (this.cellInfected && this.wastedLife >= 1)
                 this.cellLife += (float)gametime.ElapsedGameTime.TotalSeconds;
 
             this.ConstrainPhysics();

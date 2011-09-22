@@ -32,6 +32,9 @@ Content\Fonts\GameFont.xnb
 Content\Sounds\Music\crash.xnb
 Content\Sounds\Music\failed.xnb
 Content\Sounds\Music\tutorial.xnb
+Content\Sounds\buttonclickrelease.xnb
+Content\Sounds\buttonrollover.xnb
+Content\Sounds\menu_focus.xnb
 Content\Sounds\Music\crash.wma
 Content\Sounds\Music\failed.wma
 Content\Sounds\Music\tutorial.wma

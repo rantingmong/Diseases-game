@@ -52,6 +52,7 @@ namespace Diseases.Screen.Level
         float               whtElapsed = 0;
         float               powElapsed = 0;
 
+        SpriteFont          debugFont;
         DGSpriteStatic      gameBackground;
 
         bool                physicsDebugShown = false;
@@ -78,6 +79,7 @@ namespace Diseases.Screen.Level
         {
             this.gameState = GameState.Tutorial;
 
+            this.debugFont = this.ScreenManager.Content.Load<SpriteFont>("fonts/debugfont");
             this.gameBackground.LoadContent(this.ScreenManager.Content);
 
             this.gamePhysic = new World(Vector2.Zero);
@@ -186,6 +188,17 @@ namespace Diseases.Screen.Level
             }
 
             batch.Begin();
+
+            batch.DrawString(this.debugFont, string.Format("Life: {0}", this.player.MaxLife - this.player.WastedLife), new Vector2(201, 401), Color.Black);
+            batch.DrawString(this.debugFont, string.Format("Life: {0}", this.player.MaxLife - this.player.WastedLife), new Vector2(200, 400), Color.White);
+
+            batch.DrawString(this.debugFont, string.Format("RED stack size: {0}", this.redCells.Count), new Vector2(51, 401), Color.Black);
+            batch.DrawString(this.debugFont, string.Format("WHT stack size: {0}", this.whtCells.Count), new Vector2(51, 431), Color.Black);
+            batch.DrawString(this.debugFont, string.Format("POW stack size: {0}", this.powCells.Count), new Vector2(51, 461), Color.Black);
+
+            batch.DrawString(this.debugFont, string.Format("RED stack size: {0}", this.redCells.Count), new Vector2(50, 400), Color.White);
+            batch.DrawString(this.debugFont, string.Format("WHT stack size: {0}", this.whtCells.Count), new Vector2(50, 430), Color.White);
+            batch.DrawString(this.debugFont, string.Format("POW stack size: {0}", this.powCells.Count), new Vector2(50, 460), Color.White);
         }
 
         void UpdateEntityLifecycle  (GameTime gametime)
