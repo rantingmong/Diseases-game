@@ -14,36 +14,25 @@ using Diseases.Graphics;
 
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
+using FarseerPhysics.Dynamics.Joints;
 
 namespace Diseases.Entity
 {
     public class DGPlayer : DGEntity
     {
-        float           forceImpulse    = 0.8f;
+        FixedMouseJoint fixture;
+        Vector2         fVector = Vector2.Zero;
 
-        bool            ypressed        = false;
-        bool            xpressed        = false;
-
-        Vector2         fvector         = Vector2.Zero;
-
-        SoundEffect     ouch;
-        SoundEffect     hlth;
-
-        DGInputAction   keyup           = new DGInputAction(Keys.Up,    false);
-        DGInputAction   keydown         = new DGInputAction(Keys.Down,  false);
-        DGInputAction   keyleft         = new DGInputAction(Keys.Left,  false);
-        DGInputAction   keyrigt         = new DGInputAction(Keys.Right, false);
-
-        protected   override void   Initialize  ()
+        protected   override void   Initialize          ()
         {
             this.restitution = 1.5f;
             this.maxLife = 10;
             this.speed = 3;
 
-            this.sprite = new DGSpriteAnimat("entities/bacteria/idle", 8, 10);
+            this.sprite = new DGSpriteAnimat("entities/bacteria/idle", 12, 10);
         }
 
-        public      override void   LoadContent (ContentManager content, World physics)
+        public      override void   LoadContent         (ContentManager content, World physics)
         {
             base.LoadContent(content, physics);
 
@@ -51,48 +40,20 @@ namespace Diseases.Entity
             this.physics.CollisionCategories = Category.Cat1;
             this.physics.CollidesWith = Category.Cat1;
 
-            this.ouch = content.Load<SoundEffect>("sounds/ouch");
-            this.hlth = content.Load<SoundEffect>("sounds/health");
+            fixture = new FixedMouseJoint(this.physics, ConvertUnits.ToSimUnits(new Vector2(50)));
+            fixture.MaxForce = 1000;
+
+            physics.AddJoint(fixture);
         }
 
-        public      override void   HandleInput (GameTime gametime, DGInput input)
+        public      override void   HandleInput         (GameTime gametime, DGInput input)
         {
-            if (keyup.Evaluate(input))
-            {
-                this.physics.ApplyLinearImpulse(new Vector2(0, -this.forceImpulse));
-
-                this.ypressed = true;
-            }
-            else this.ypressed = false;
-
-            if (keydown.Evaluate(input))
-            {
-                this.physics.ApplyLinearImpulse(new Vector2(0, this.forceImpulse));
-
-                this.ypressed = true;
-            }
-            else this.ypressed = false;
-
-            if (keyleft.Evaluate(input))
-            {
-                this.physics.ApplyLinearImpulse(new Vector2(-this.forceImpulse, 0));
-
-                this.xpressed = true;
-            }
-            else this.xpressed = false;
-
-            if (keyrigt.Evaluate(input))
-            {
-                this.physics.ApplyLinearImpulse(new Vector2(this.forceImpulse, 0));
-
-                this.xpressed = true;
-            }
-            else this.xpressed = false;
+            fixture.WorldAnchorB = ConvertUnits.ToSimUnits(new Vector2(input.CurMouseState.X, input.CurMouseState.Y));
         }
-        public      override void   Update      (GameTime gametime)
+        public      override void   Update              (GameTime gametime)
         {
             base.Update(gametime);
-            
+
             if (this.wastedLife == 6)
             {
                 this.sprite.Tint = Color.White;
@@ -101,16 +62,30 @@ namespace Diseases.Entity
 
             if (this.wastedLife == 7)
             {
-                this.sprite.Tint = Color.LightGreen;
+                this.sprite.Tint = Color.Orange;
                 this.speed = 2;
             }
 
             this.wastedLife = (int)MathHelper.Clamp(this.wastedLife, 0, 10);
 
-            this.ConstrainPhysics();
+            float fx = this.physics.LinearVelocity.X;
+            float fy = this.physics.LinearVelocity.Y;
+
+            fx = MathHelper.Clamp(fx, -this.speed, this.speed);
+            fy = MathHelper.Clamp(fy, -this.speed, this.speed);
+
+            this.fVector.X = fx;
+            this.fVector.Y = fy;
+
+            this.physics.LinearVelocity = this.fVector;
         }
 
-        public      void            Damage      ()
+        public      bool            Dead                ()
+        {
+            return this.wastedLife == this.maxLife;
+        }
+
+        public      void            Damage              ()
         {
             if (!this.cooldownActive)
             {
@@ -120,41 +95,10 @@ namespace Diseases.Entity
                 this.wastedLife++;
             }
         }
-        public      void            Healed      ()
+        public      void            Healed              ()
         {
             this.cooldownActive = false;
             this.wastedLife--;
-        }
-
-        void ConstrainPhysics()
-        {
-            float fx = this.physics.LinearVelocity.X;
-            float fy = this.physics.LinearVelocity.Y;
-
-            if (this.xpressed)
-                fx = MathHelper.Clamp(fx, -this.speed, this.speed);
-            else
-            {
-                if (this.physics.LinearVelocity.X > 0)
-                    fx = MathHelper.Clamp(fx - 0.1f, 0, this.speed);
-                else
-                    fx = MathHelper.Clamp(fx + 0.1f, -this.speed, 0);
-            }
-
-            if (this.ypressed)
-                fy = MathHelper.Clamp(fy, -this.speed, this.speed);
-            else
-            {
-                if (this.physics.LinearVelocity.Y > 0)
-                    fy = MathHelper.Clamp(fy - 0.1f, 0, this.speed);
-                else
-                    fy = MathHelper.Clamp(fy + 0.1f, -this.speed, 0);
-            }
-
-            fvector.X = fx;
-            fvector.Y = fy;
-
-            this.physics.LinearVelocity = fvector;
         }
     }
 }

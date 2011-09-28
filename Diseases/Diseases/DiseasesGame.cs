@@ -32,7 +32,9 @@ namespace Diseases
 
     public class DiseasesGame : Game
     {
-        MenuMain                        menumain        = new MenuMain();
+        float                           updateTime      = 0;
+        Vector2                         fpsPos          = new Vector2(20, 510);
+        Vector2                         mstPos          = new Vector2(20, 480);
 
         SamplerState                    samplerState    = new SamplerState();
 
@@ -55,6 +57,8 @@ namespace Diseases
         {
             this.IsMouseVisible = true;
 
+            this.Window.Title = "Diseases - DEMO PURPOSES ONLY!";
+
             this.graphicsManager = new GraphicsDeviceManager(this);
 
             this.graphicsManager.PreferMultiSampling = true;
@@ -76,7 +80,9 @@ namespace Diseases
 
                 this.Components.Add(this.screenmanager);
 
-                this.screenmanager.AddScreen(this.menumain);
+                this.screenmanager.SwitchScreen(new MenuMain());
+
+                this.Content.RootDirectory = "content";
 
                 base.Initialize();
             }
@@ -85,7 +91,7 @@ namespace Diseases
                 Debug.WriteLine(ex.Message, "STOP");
                 Debug.WriteLine("stack trace\n" + ex.StackTrace, "STOP");
 
-                this.crshmessage = ex.Message;
+                this.crshmessage = ex.ToString();
 
                 this.gamecrashed = true;
             }
@@ -95,27 +101,24 @@ namespace Diseases
         {
             try
             {
-                this.Content.RootDirectory = "content";
-
                 this.spriteBatch = new SpriteBatch(this.GraphicsDevice);
-
-                this.samplerState.Filter = TextureFilter.Linear;
-
-                this.crashSprite.LoadContent(this.Content);
-                this.crashSong  = this.Content.Load<Song>("sounds/music/crash");
 
                 this.debugFont = this.Content.Load<SpriteFont>("fonts/debugfont");
 
-                base.LoadContent();
-
+                this.samplerState.Filter = TextureFilter.Point;
                 this.GraphicsDevice.SamplerStates[0] = this.samplerState;
+
+                this.crashSprite.LoadContent(this.Content);
+                this.crashSong = this.Content.Load<Song>("sounds/music/crash");
+
+                base.LoadContent();
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message, "STOP");
                 Debug.WriteLine("stack trace\n" + ex.StackTrace, "STOP");
 
-                this.crshmessage = ex.Message;
+                this.crshmessage = ex.ToString();
 
                 this.gamecrashed = true;
             }
@@ -127,8 +130,6 @@ namespace Diseases
                 this.crashSprite.UnloadContent();
                 this.crashSong.Dispose();
 
-                this.menumain.UnloadContent();
-
                 base.UnloadContent();
             }
             catch (Exception ex)
@@ -136,7 +137,7 @@ namespace Diseases
                 Debug.WriteLine(ex.Message, "STOP");
                 Debug.WriteLine("stack trace\n" + ex.StackTrace, "STOP");
 
-                this.crshmessage = ex.Message;
+                this.crshmessage = ex.ToString();
 
                 this.gamecrashed = true;
             }
@@ -150,13 +151,15 @@ namespace Diseases
                     try
                     {
                         base.Update(gameTime);
+
+                        this.updateTime = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine(ex.Message, "STOP");
                         Debug.WriteLine("stack trace\n" + ex.StackTrace, "STOP");
 
-                        this.crshmessage = ex.Message;
+                        this.crshmessage = ex.ToString();
 
                         this.gamecrashed = true;
                     }
@@ -168,15 +171,11 @@ namespace Diseases
                 if (!this.musicplayed)
                 {
                     MediaPlayer.Play(this.crashSong);
-
                     this.musicplayed = true;
                 }
 
                 if (Keyboard.GetState().IsKeyDown(Keys.Space))
                     this.Exit();
-
-                if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.F1))
-                    Debug.Fail(this.crshmessage);
             }
         }
         protected override void         Draw            (GameTime gameTime)
@@ -189,18 +188,26 @@ namespace Diseases
 
                     base.Draw(gameTime);
 
+#if DEBUG
+
                     this.spriteBatch.Begin();
 
-                    this.spriteBatch.DrawString(this.debugFont, string.Format("FPS: {0}", Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds, 0)), new Vector2(20, 510), Color.Black);
+                    this.spriteBatch.DrawString(this.debugFont, string.Format("FPS: {0}", Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds, 0)), this.fpsPos + new Vector2(1), Color.Black);
+                    this.spriteBatch.DrawString(this.debugFont, string.Format("FPS: {0}", Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds, 0)), this.fpsPos, Color.White);
+
+                    this.spriteBatch.DrawString(this.debugFont, string.Format("MS: {0}", Math.Round(this.updateTime, 0)), this.mstPos + new Vector2(1), Color.Black);
+                    this.spriteBatch.DrawString(this.debugFont, string.Format("MS: {0}", Math.Round(this.updateTime, 0)), this.mstPos, Color.White);
 
                     this.spriteBatch.End();
+
+#endif
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine(ex.Message, "STOP");
                     Debug.WriteLine("stack trace\n" + ex.StackTrace, "STOP");
 
-                    this.crshmessage = ex.Message;
+                    this.crshmessage = ex.ToString();
 
                     this.gamecrashed = true;
                 }

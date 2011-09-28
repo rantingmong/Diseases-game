@@ -14,60 +14,51 @@ namespace Diseases.Screen.Menu
 {
     public class MenuPaus : DGMenuScreen
     {
-        MenuSett settings = new MenuSett();
-
-        DGMenuEntry buttonresm = new DGMenuEntry("resume", "entities/menuentries/resm", false)
+        DGMenuEntry playEntry = new DGMenuEntry(new DGSpriteStatic("entities/menubuttons/paus/play"), new DGSpriteStatic("entities/menubuttons/paus/play_selt"))
         {
-            Location = new Vector2(325, 220)
+            Location = new Vector2(400, 140)
         };
-        DGMenuEntry buttonoptn = new DGMenuEntry("option", "entities/menuentries/mainsett", false)
+        DGMenuEntry scorEntry = new DGMenuEntry(new DGSpriteStatic("entities/menubuttons/paus/high"), new DGSpriteStatic("entities/menubuttons/paus/high_selt"))
         {
-            Location = new Vector2(325, 300)
+            Location = new Vector2(400, 190)
         };
-        DGMenuEntry buttonquit = new DGMenuEntry("quit", "entities/menuentries/quit", false)
+        DGMenuEntry quitEntry = new DGMenuEntry(new DGSpriteStatic("entities/menubuttons/paus/quit"), new DGSpriteStatic("entities/menubuttons/paus/quit_selt"))
         {
-            Location = new Vector2(325, 380)
+            Location = new Vector2(400, 240)
         };
 
         DGSpriteStatic background = new DGSpriteStatic("backgrounds/menu/paus");
 
         public MenuPaus()
-            : base("menu")
+            : base("pause")
         {
-            this.PopupScreen = true;
 
-            this.buttonresm.Selected += new EventHandler<EventArgs>(buttonresm_Selected);
-            this.buttonoptn.Selected += new EventHandler<EventArgs>(buttonoptn_Selected);
-            this.buttonquit.Selected += new EventHandler<EventArgs>(buttonquit_Selected);
-        }
-
-        void buttonquit_Selected(object sender, EventArgs e)
-        {
-            this.ScreenManager.SwitchScreen(new MenuMain());
-        }
-        void buttonoptn_Selected(object sender, EventArgs e)
-        {
-            this.ScreenManager.AddScreen(this.settings);
-        }
-        void buttonresm_Selected(object sender, EventArgs e)
-        {
-            this.OnCancel();
-        }
-
-        protected override void OnCancel()
-        {
-            this.ScreenManager.RemoveScreen(this);
         }
 
         protected override void Initialize()
         {
-            base.Initialize();
+            this.BackgroundList.Add(this.background);
 
-            this.MenuList.Add(buttonresm);
-            this.MenuList.Add(buttonoptn);
-            this.MenuList.Add(buttonquit);
+            this.MenuList.Add(this.playEntry);
+            this.MenuList.Add(this.scorEntry);
+            this.MenuList.Add(this.quitEntry);
 
-            this.BackgroundList.Add(background);
+            this.playEntry.Selected += (o, s) =>
+            {
+                this.ScreenManager.RemoveScreen(this);
+            };
+            this.scorEntry.Selected += (o, s) =>
+            {
+
+            };
+            this.quitEntry.Selected += (o, s) =>
+            {
+                this.ScreenManager.SwitchScreen(new MenuMain(true));
+            };
+        }
+        protected override void OnCancel()
+        {
+            this.ScreenManager.RemoveScreen(this);
         }
     }
 }

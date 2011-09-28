@@ -78,9 +78,6 @@ namespace Diseases.Entity
             if (this.wastedLife == 1 || this.cellLife >= 10)
             {
                 this.sprite.Tint = Color.Yellow;
-
-                this.restitution = 4;
-                this.speed = 1;
             }
 
             if (this.wastedLife == 2 || this.cellLife >= 15)

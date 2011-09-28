@@ -14,24 +14,10 @@ namespace Diseases.Screen.Menu
 {
     public class MenuHigh : DGMenuScreen
     {
-        DGSpriteStatic background = new DGSpriteStatic("backgrounds/menu/high");
-
         public MenuHigh()
             : base("high scores")
         {
 
-        }
-
-        protected override void OnCancel()
-        {
-            this.ScreenManager.RemoveScreen(this);
-        }
-
-        protected override void Initialize()
-        {
-            base.Initialize();
-
-            this.BackgroundList.Add(background);
         }
     }
 }

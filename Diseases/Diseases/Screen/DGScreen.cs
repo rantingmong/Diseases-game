@@ -13,26 +13,30 @@ namespace Diseases.Screen
 {
     public abstract class DGScreen
     {
-        bool                        popup           = false;
-        public bool                 PopupScreen
+        #region FIELDS
+
+        bool                        allowupdateinbackground = false;
+        public bool                 AllowUpdateInBackground
         {
-            get { return this.popup; }
-            set { this.popup = value; }
+            get { return this.allowupdateinbackground; }
+            set { this.allowupdateinbackground = value; }
         }
 
-        bool                        unloadonremove  = false;
+        bool                        unloadonremove          = false;
         public bool                 UnloadOnRemove
         {
             get { return this.unloadonremove; }
             set { this.unloadonremove = value; }
         }
 
-        bool                        overrideinput   = false;
+        bool                        overrideinput           = false;
         public bool                 OverrideInput
         {
             get { return this.overrideinput; }
             set { this.overrideinput = value; }
         }
+
+        internal bool               loaded                  = false;
 
         DGScreenManager             screenManager;
         public DGScreenManager      ScreenManager
@@ -41,12 +45,20 @@ namespace Diseases.Screen
             internal set { this.screenManager = value; }
         }
 
+        #endregion 
+
+        #region CTOR
+
         public                      DGScreen        ()
         {
             Debug.WriteLine("initializing screen " + this.ToString(), "INFO");
 
             this.Initialize();
         }
+
+        #endregion
+
+        #region METHODS
 
         protected   virtual void    Initialize      ()
         {
@@ -55,6 +67,7 @@ namespace Diseases.Screen
         
         public      virtual void    LoadContent     ()
         {
+            this.loaded = true;
             this.screenManager.isloading = false;
         }
         public      virtual void    UnloadContent   ()
@@ -75,5 +88,7 @@ namespace Diseases.Screen
         {
 
         }
+
+        #endregion
     }
 }

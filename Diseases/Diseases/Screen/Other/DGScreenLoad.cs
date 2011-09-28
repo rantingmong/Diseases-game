@@ -16,6 +16,8 @@ namespace Diseases.Screen.Other
     {
         IDGSprite background;
 
+        DGSpriteStatic backgroundOverlay = new DGSpriteStatic("backgrounds/loadovly");
+
         public                  DGScreenLoad    (IDGSprite loadScreen)
         {
             background = loadScreen;
@@ -24,12 +26,14 @@ namespace Diseases.Screen.Other
         public override void    LoadContent     ()
         {
             background.LoadContent(this.ScreenManager.Content);
+            backgroundOverlay.LoadContent(this.ScreenManager.Content);
 
             base.LoadContent();
         }
         public override void    UnloadContent   ()
         {
             background.UnloadContent();
+            backgroundOverlay.UnloadContent();
 
             base.UnloadContent();
         }
@@ -37,10 +41,12 @@ namespace Diseases.Screen.Other
         public override void    Update          (GameTime gametime)
         {
             background.Update(gametime);
+            backgroundOverlay.Update(gametime);
         }
         public override void    Render          (SpriteBatch batch)
         {
             background.Render(batch);
+            backgroundOverlay.Render(batch);
         }
     }
 }

@@ -83,7 +83,7 @@ namespace Diseases.Entity
         {
             this.sprite.LoadContent(content);
 
-            this.physics                = BodyFactory.CreateCircle(physics, ConvertUnits.ToSimUnits(sprite.Texture.Height / 2), 0);
+            this.physics                = BodyFactory.CreateCircle(physics, ConvertUnits.ToSimUnits((sprite.Texture.Height * this.sprite.Scale.Y) / 2), 0);
             this.physics.BodyType       = BodyType.Dynamic;
             this.physics.Restitution    = this.restitution;
 
@@ -91,8 +91,8 @@ namespace Diseases.Entity
 
             this.bounds = new Rectangle(0, 
                                         0, 
-                                        (int)this.sprite.Texture.Height, 
-                                        (int)this.sprite.Texture.Height);
+                                        (int)(this.sprite.Texture.Height * this.sprite.Scale.X), 
+                                        (int)(this.sprite.Texture.Height * this.sprite.Scale.Y));
         }
         public      virtual void    UnloadContent   ()
         {

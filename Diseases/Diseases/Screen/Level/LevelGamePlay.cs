@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Threading;
 using System.Diagnostics;
 using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Graphics;
 
 using Diseases.Input;
@@ -20,50 +22,53 @@ using FarseerPhysics.Factories;
 
 namespace Diseases.Screen.Level
 {
-    public enum GameState
-    {
-        Paused  ,
-        Playing ,
-        Tutorial,
-        Gamelost,
-    }
-
     public class LevelGamePlay : DGScreen
     {
-        GameState           gameState;
+        #region FIELDS
 
-        Random              randomizer;
+        float                       readyTime = 0;
+        bool                        isPlaying;
 
-        Body                gameBorder;
-        World               gamePhysic;
+        bool                        gameLost;
+        Random                      randomizer;
 
-        Matrix              projMatrix;
-        DebugViewXNA        viewnDebug;
+        Body                        gameBorder;
+        World                       gamePhysic;
 
-        DGPlayer            player;
+        Matrix                      projMatrix;
+        DebugViewXNA                viewnDebug;
 
-        float               totElapsed = 0;
+        DGPlayer                    player;
 
-        List<DGRedCell>     redCells;
-        List<DGWhtCell>     whtCells;
-        List<DGPowCell>     powCells;
+        float                       totElapsed          = 0;
 
-        float               redElapsed = 0;
-        float               whtElapsed = 0;
-        float               powElapsed = 0;
+        List<DGRedCell>             redCells;
+        List<DGWhtCell>             whtCells;
+        List<DGPowCell>             powCells;
 
-        SpriteFont          debugFont;
-        DGSpriteStatic      gameBackground;
+        float                       redElapsed          = 0;
+        float                       whtElapsed          = 0;
+        float                       powElapsed          = 0;
 
-        bool                physicsDebugShown = false;
-        DGInputAction       physicsInput;
+        SpriteFont                  debugFont;
+        DGSpriteStatic              gameBackground;
 
-        MenuPaus            pausMenu;
-        DGInputAction       pausInput;
+        bool                        physicsDebugShown   = false;
+        DGInputAction               physicsInput;
 
-        protected   override void Initialize    ()
+        Song                        overSong;
+        MenuOver                    overMenu;
+
+        MenuPaus                    pausMenu;
+        DGInputAction               pausInput;
+
+        #endregion
+
+        #region OVERRIDES
+
+        protected   override void   Initialize              ()
         {
-            this.gameBackground = new DGSpriteStatic("backgrounds/null");
+            this.gameBackground = new DGSpriteStatic("backgrounds/menu/mainBack");
 
             this.redCells = new List<DGRedCell>();
             this.whtCells = new List<DGWhtCell>();
@@ -73,19 +78,20 @@ namespace Diseases.Screen.Level
             this.physicsInput = new DGInputAction(Keys.F1, true);
 
             this.pausMenu = new MenuPaus();
+            this.overMenu = new MenuOver();
         }
 
-        public      override void LoadContent   ()
+        public      override void   LoadContent             ()
         {
-            this.gameState = GameState.Tutorial;
-
             this.debugFont = this.ScreenManager.Content.Load<SpriteFont>("fonts/debugfont");
             this.gameBackground.LoadContent(this.ScreenManager.Content);
+
+            this.overSong = this.ScreenManager.Content.Load<Song>("sounds/music/failed");
 
             this.gamePhysic = new World(Vector2.Zero);
             this.viewnDebug  = new DebugViewXNA(this.gamePhysic)
             {
-                Flags = DebugViewFlags.DebugPanel | DebugViewFlags.PerformanceGraph | DebugViewFlags.Shape,
+                Flags = DebugViewFlags.DebugPanel | DebugViewFlags.PerformanceGraph | DebugViewFlags.Shape | DebugViewFlags.Joint
             };
             this.viewnDebug.LoadContent(this.ScreenManager.GraphicsDevice, this.ScreenManager.Content);
 
@@ -118,53 +124,84 @@ namespace Diseases.Screen.Level
                 this.player = new DGPlayer();
                 this.player.LoadContent(this.ScreenManager.Content, this.gamePhysic);
 
-                this.player.EntityLocation = new Vector2(gameView.Width / 2, gameView.Height / 2);
+                MouseState state = Mouse.GetState();
+
+                this.player.EntityLocation = new Vector2(state.X, state.Y);
             }
+
+            Thread.Sleep(3000);
 
             base.LoadContent();
         }
-        public      override void UnloadContent ()
+        public      override void   UnloadContent           ()
         {
             this.player.UnloadContent();
+
+            this.overMenu.UnloadContent();
             this.pausMenu.UnloadContent();
 
             this.viewnDebug.Dispose();
         }
 
-        public      override void HandleInput   (GameTime gametime, DGInput input)
+        public      override void   HandleInput             (GameTime gametime, DGInput input)
         {
-            if (this.pausInput.Evaluate(input))
+            if (!this.player.Dead())
             {
-                this.ScreenManager.AddScreen(this.pausMenu);
-                this.physicsDebugShown = false;
+                if (this.pausInput.Evaluate(input))
+                {
+                    this.ScreenManager.AddScreen(this.pausMenu);
+                    this.physicsDebugShown = false;
+                }
 
-                this.gameState = GameState.Paused;
+#if DEBUG
+
+                if (this.physicsInput.Evaluate(input))
+                    this.physicsDebugShown = this.physicsDebugShown ? false : true;
+
+#endif
+
+                this.player.HandleInput(gametime, input);
             }
-
-            if (this.physicsInput.Evaluate(input))
-                this.physicsDebugShown = this.physicsDebugShown ? false : true;
-
-            this.player.HandleInput(gametime, input);
         }
 
-        public      override void Update        (GameTime gametime)
+        public      override void   Update                  (GameTime gametime)
         {
+            //if (!this.isPlaying)
+            //{
+            //    this.readyTime += (float)gametime.ElapsedGameTime.TotalSeconds;
+
+            //    if (this.readyTime > 3)
+            //        this.isPlaying = true;
+
+            //    return;
+            //}
+
             this.gameBackground.Update(gametime);
+
+            if (this.player.Dead() && !this.gameLost)
+            {
+                this.gameLost = true;
+                this.OverrideInput = true;
+
+                MediaPlayer.Play(this.overSong);
+
+                this.ScreenManager.AddScreen(this.overMenu);
+            }
 
             lock (this.gamePhysic)
             {
                 this.gamePhysic.Step(Math.Min((float)gametime.ElapsedGameTime.TotalSeconds, 1 / 30f));
 
-                this.UpdateEntityLifecycle  (gametime);
-                this.CleanupEntities        (gametime);
+                this.UpdateEntityLifecycle(gametime);
+                this.CleanupEntities(gametime);
 
-                this.CreateEntities         (gametime);
-                this.UpdateEntities         (gametime);
+                this.CreateEntities(gametime);
+                this.UpdateEntities(gametime);
 
                 this.player.Update(gametime);
             }
         }
-        public      override void Render        (SpriteBatch batch)
+        public      override void   Render                  (SpriteBatch batch)
         {
             this.gameBackground.Render(batch);
 
@@ -177,7 +214,10 @@ namespace Diseases.Screen.Level
             foreach (DGWhtCell cell in this.whtCells)
                 cell.Render(batch);
 
-            this.player.Render(batch);
+            if (!this.player.Dead())
+                this.player.Render(batch);
+
+#if DEBUG
 
             batch.End();
 
@@ -199,9 +239,15 @@ namespace Diseases.Screen.Level
             batch.DrawString(this.debugFont, string.Format("RED stack size: {0}", this.redCells.Count), new Vector2(50, 400), Color.White);
             batch.DrawString(this.debugFont, string.Format("WHT stack size: {0}", this.whtCells.Count), new Vector2(50, 430), Color.White);
             batch.DrawString(this.debugFont, string.Format("POW stack size: {0}", this.powCells.Count), new Vector2(50, 460), Color.White);
+
+#endif
         }
 
-        void UpdateEntityLifecycle  (GameTime gametime)
+        #endregion 
+
+        #region METHODS
+
+        private     void            UpdateEntityLifecycle   (GameTime gametime)
         {
             this.redElapsed += (float)gametime.ElapsedGameTime.TotalSeconds;
             this.whtElapsed += (float)gametime.ElapsedGameTime.TotalSeconds;
@@ -209,7 +255,7 @@ namespace Diseases.Screen.Level
 
             this.totElapsed += (float)gametime.ElapsedGameTime.TotalSeconds;
         }
-        void CleanupEntities        (GameTime gametime)
+        private     void            CleanupEntities         (GameTime gametime)
         {
             for (int i = 0; i < this.redCells.Count; i++)
             {
@@ -260,8 +306,8 @@ namespace Diseases.Screen.Level
                 }
             }
         }
-
-        void CreateEntities         (GameTime gametime)
+                                    
+        private     void            CreateEntities          (GameTime gametime)
         {
             if (this.redElapsed >= (60 / 30) && this.redCells.Count < 15)
             {
@@ -273,7 +319,7 @@ namespace Diseases.Screen.Level
                 this.redElapsed = 0;
             }
 
-            if (this.whtElapsed >= (60 / 10) && this.whtCells.Count < 5)
+            if (this.whtElapsed >= (60 / 10) && this.whtCells.Count < 3)
             {
                 DGWhtCell cell = new DGWhtCell(this.randomizer);
                 cell.LoadContent(this.ScreenManager.Content, this.gamePhysic);
@@ -293,13 +339,13 @@ namespace Diseases.Screen.Level
                 this.powElapsed = 0;
             }
         }
-        void UpdateEntities         (GameTime gametime)
+        private     void            UpdateEntities          (GameTime gametime)
         {            
             foreach (DGWhtCell cell in this.whtCells)
             {
                 cell.Update(gametime);
 
-                if (cell.EntityBounds.Intersects(this.player.EntityBounds))
+                if (cell.EntityBounds.Intersects(this.player.EntityBounds) && !this.player.Dead())
                 {
                     this.player.Damage();
                     cell.Damage();
@@ -310,7 +356,7 @@ namespace Diseases.Screen.Level
             {
                 cell.Update(gametime);
 
-                if (cell.EntityBounds.Intersects(this.player.EntityBounds) && !cell.CellInfected)
+                if (cell.EntityBounds.Intersects(this.player.EntityBounds) && !cell.CellInfected && !this.player.Dead())
                 {
                     cell.Infect();
                 }
@@ -329,12 +375,14 @@ namespace Diseases.Screen.Level
             {
                 cell.Update(gametime);
 
-                if (cell.EntityBounds.Intersects(this.player.EntityBounds))
+                if (cell.EntityBounds.Intersects(this.player.EntityBounds) && !this.player.Dead())
                 {
                     cell.Eaten();
                     this.player.Healed();
                 }
             }
         }
+
+        #endregion
     }
 }

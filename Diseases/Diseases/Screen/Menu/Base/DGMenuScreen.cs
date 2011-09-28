@@ -16,24 +16,11 @@ namespace Diseases.Screen.Menu
     public class DGMenuScreen : DGScreen
     {
         int                         selectedentry   = 0;
-        bool                        focusPlayed     = false;
 
-        SoundEffect                 buttonPress;
-        SoundEffect                 buttonFocus;
-
-        DGInputAction               menuUp;
-        DGInputAction               menuLf;
-        DGInputAction               menuRt;
-        DGInputAction               menuBt;
-        
         DGInputAction               menuEx;
         DGInputSequence             menuSt;
 
-        internal bool               loading         = false;
-
         internal string             menuname;
-
-        List<DGMenuEntry>           tempmenu;
 
         List<DGMenuEntry>           menus           = new List<DGMenuEntry>();
         public List<DGMenuEntry>    MenuList
@@ -52,39 +39,14 @@ namespace Diseases.Screen.Menu
         public                      DGMenuScreen    (string menuname)
         {
             this.menuname = menuname;
-            this.tempmenu = new List<DGMenuEntry>();
 
-            this.menuUp = new DGInputAction(Keys.Up, 
-                true)
+            this.menuSt = new DGInputSequence(new Keys[] { Keys.Space, Keys.Enter }, true, false)
             {
-                inputname = "up key",
+                inputname = "menu select",
             };
-            this.menuLf = new DGInputAction(Keys.Left, 
-                true)
+            this.menuEx = new DGInputAction(Keys.Escape, true)
             {
-                inputname = "left key",
-            };
-            this.menuRt = new DGInputAction(Keys.Right, 
-                true)
-            {
-                inputname = "right key",
-            };
-            this.menuBt = new DGInputAction(Keys.Down, 
-                true)
-            {
-                inputname = "down key",
-            };
-
-            this.menuSt = new DGInputSequence(new Keys[] { Keys.Space, Keys.Enter },
-                true,
-                false)
-            {
-                inputname = "space key",
-            };
-            this.menuEx = new DGInputAction(Keys.Escape, 
-                true)
-            {
-                inputname = "escape key",
+                inputname = "menu cancel",
             };
         }
 
@@ -100,9 +62,6 @@ namespace Diseases.Screen.Menu
 
         public override void        LoadContent     ()
         {
-            this.buttonFocus = this.ScreenManager.Content.Load<SoundEffect>("sounds/menu_focus");
-            this.buttonPress = this.ScreenManager.Content.Load<SoundEffect>("sounds/buttonpress");
-
             foreach (DGMenuEntry menu in this.menus)
                 menu.LoadContent(this.ScreenManager.Content);
 
@@ -114,121 +73,34 @@ namespace Diseases.Screen.Menu
         public override void        UnloadContent   ()
         {
             foreach (DGMenuEntry menu in this.menus)
-                menu.UnloadContent();
+                if (menu != null)
+                    menu.UnloadContent();
 
             foreach (IDGSprite background in this.background)
-                background.UnloadContent();
-
-            this.buttonPress.Dispose();
+                if (background != null)
+                    background.UnloadContent();
         }
 
         public override void        HandleInput     (GameTime gametime, DGInput input)
         {
-            int prevSelect = this.selectedentry;
+            bool selectionFound = false;
 
             foreach (DGMenuEntry entry in this.menus)
             {
                 if (input.TestLocation(entry.Bounds))
                 {
+                    selectionFound = true;
                     this.selectedentry = this.menus.IndexOf(entry);
-
-                    if (!this.focusPlayed)
-                    {
-                        this.buttonFocus.Play();
-
-                        this.focusPlayed = true;
-                    }
 
                     break;
                 }
             }
 
-            if(prevSelect != this.selectedentry)
-                this.focusPlayed = false;
+            if (!selectionFound)
+                this.selectedentry = -1;
 
-            if (this.menus.Count > 1)
+            if (menuSt.Evaluate(input) && this.menus.Count > 1 || (input.TestLeftButton() && selectionFound))
             {
-                bool navikeypress = false;
-
-                if (menuUp.Evaluate(input))
-                {
-                    DGMenuEntry selectedentry = this.menus[this.selectedentry];
-                    foreach (DGMenuEntry entry in this.menus)
-                    {
-                        if (entry != selectedentry && entry.Location.Y < selectedentry.Location.Y)
-                            this.tempmenu.Add(entry);
-                    }
-
-                    navikeypress = true;
-                }
-
-                if (menuLf.Evaluate(input))
-                {
-                    DGMenuEntry selectedentry = this.menus[this.selectedentry];
-                    foreach (DGMenuEntry entry in this.menus)
-                    {
-                        if (entry != selectedentry && entry.Location.X < selectedentry.Location.X)
-                            this.tempmenu.Add(entry);
-                    }
-
-                    navikeypress = true;
-                }
-
-                if (menuRt.Evaluate(input))
-                {
-                    DGMenuEntry selectedentry = this.menus[this.selectedentry];
-                    foreach (DGMenuEntry entry in this.menus)
-                    {
-                        if (entry != selectedentry && entry.Location.X > selectedentry.Location.X)
-                            this.tempmenu.Add(entry);
-                    }
-
-                    navikeypress = true;
-                }
-
-                if (menuBt.Evaluate(input))
-                {
-                    DGMenuEntry selectedentry = this.menus[this.selectedentry];
-                    foreach (DGMenuEntry entry in this.menus)
-                    {
-                        if (entry != selectedentry && entry.Location.Y > selectedentry.Location.Y)
-                            this.tempmenu.Add(entry);
-                    }
-
-                    navikeypress = true;
-                }
-
-                if (this.tempmenu.Count >= 1 && navikeypress)
-                {
-                    int i = 0;
-                    double[] heuristic = new double[this.tempmenu.Count];
-
-                    DGMenuEntry selectedentry = this.menus[this.selectedentry];
-                    foreach (DGMenuEntry entry in this.tempmenu)
-                    {
-                        heuristic[i++] = Math.Sqrt(Math.Pow(selectedentry.Location.X - entry.Location.X, 2) + Math.Pow(selectedentry.Location.Y - entry.Location.Y, 2));
-                    }
-
-                    int nxtslct = this.selectedentry;
-                    double nearest = double.MaxValue;
-                    for (int d = 0; d < heuristic.Length; d++)
-                    {
-                        if (nearest > heuristic[d])
-                        {
-                            nearest = heuristic[d];
-                            nxtslct = d;
-                        }
-                    }
-
-                    this.selectedentry = this.menus.IndexOf(this.tempmenu[nxtslct]);
-
-                    this.tempmenu.Clear();
-                }
-            }
-
-            if (menuSt.Evaluate(input) && this.menus.Count > 1 || (input.TestLeftButton() && input.TestLocation(this.menus[this.selectedentry].Bounds)))
-            {
-                this.buttonPress.Play();
                 OnSelect(this.selectedentry);
             }
             

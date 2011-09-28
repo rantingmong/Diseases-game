@@ -6,80 +6,164 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Microsoft.Xna.Framework.Input;
 
+using FarseerPhysics.Common;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
+
 using Diseases.Input;
 using Diseases.Entity;
+using Diseases.Physics;
 using Diseases.Graphics;
 using Diseases.Screen.Level;
+using System.Threading;
 
 namespace Diseases.Screen.Menu
 {
     public class MenuMain : DGMenuScreen
     {
-        MenuHigh smenuhigh = new MenuHigh();
-        MenuSett smenusett = new MenuSett();
-        MenuExit smenuexit = new MenuExit();
-        LevelGamePlay play = new LevelGamePlay();
+        #region FIELDS
 
-        DGMenuEntry menuplay = new DGMenuEntry("play", "entities/menuentries/mainplay", false)
+        bool                        longload            = false;
+
+        World                       physics             = new World(Vector2.Zero);
+        DGRedCell[]                 redCells            = new DGRedCell[20];
+        
+        DGMenuEntry                 playEntry           = new DGMenuEntry(new DGSpriteStatic("entities/menubuttons/main/play"), new DGSpriteStatic("entities/menubuttons/main/play_selt"))
         {
-            Location = new Vector2(50, 350)
+            Location = new Vector2(400, 140)
         };
-        DGMenuEntry menuhigh = new DGMenuEntry("play", "entities/menuentries/mainhigh", false)
+        DGMenuEntry                 scorEntry           = new DGMenuEntry(new DGSpriteStatic("entities/menubuttons/main/high"), new DGSpriteStatic("entities/menubuttons/main/high_selt"))
         {
-            Location = new Vector2(215, 350)
+            Location = new Vector2(400, 190)
         };
-        DGMenuEntry menusett = new DGMenuEntry("play", "entities/menuentries/mainsett", false)
+        DGMenuEntry                 tuttEntry           = new DGMenuEntry(new DGSpriteStatic("entities/menubuttons/main/tutt"), new DGSpriteStatic("entities/menubuttons/main/tutt_selt"))
         {
-            Location = new Vector2(380, 350)
-        };
-        DGMenuEntry menuexit = new DGMenuEntry("exit", "entities/menuentries/mainexit", false)
-        {
-            Location = new Vector2(545, 350)
+            Location = new Vector2(400, 240)
         };
 
-        DGSpriteStatic background = new DGSpriteStatic("backgrounds/menu/main");
+        DGSpriteStatic              gameBackground      = new DGSpriteStatic("backgrounds/menu/mainBack");
+        DGSpriteStatic              backgroundHolder    = new DGSpriteStatic("backgrounds/menu/main");
 
-        public MenuMain()
+        #endregion
+
+        #region CTOR
+
+        public                      MenuMain            ()
             : base("main")
         {
-            menuexit.Selected += new EventHandler<EventArgs>(menuexit_Selected);
-            menuhigh.Selected += new EventHandler<EventArgs>(menuhigh_Selected);
-            menusett.Selected += new EventHandler<EventArgs>(menusett_Selected);
-            menuplay.Selected += new EventHandler<EventArgs>(menuplay_Selected);
+
+        }
+        public                      MenuMain            (bool loading)
+            : base("main")
+        {
+            this.longload = loading;
         }
 
-        void menuplay_Selected(object sender, EventArgs e)
+        #endregion
+
+        #region OVERRIDES
+
+        protected   override void   Initialize          ()
         {
-            this.ScreenManager.SwitchScreen(this.play);
-        }
-        void menuhigh_Selected(object sender, EventArgs e)
-        {
-            this.ScreenManager.AddScreen(this.smenuhigh);
-        }
-        void menusett_Selected(object sender, EventArgs e)
-        {
-            this.ScreenManager.AddScreen(this.smenusett);
-        }
-        void menuexit_Selected(object sender, EventArgs e)
-        {
-            this.OnCancel();
+            this.BackgroundList.Add(backgroundHolder);
+
+            this.MenuList.Add(playEntry);
+            this.MenuList.Add(scorEntry);
+            this.MenuList.Add(tuttEntry);
+
+            this.playEntry.Selected += (s, o) =>
+            {
+                this.ScreenManager.SwitchScreen(new LevelGamePlay());
+            };
+            this.scorEntry.Selected += (s, o) =>
+            {
+
+            };
+            this.tuttEntry.Selected += (s, o) =>
+            {
+
+            };
         }
 
-        protected override void OnCancel()
+        public      override void   LoadContent         ()
         {
-            this.ScreenManager.AddScreen(this.smenuexit);
+            Viewport gameView = this.ScreenManager.GraphicsDevice.Viewport;
+
+            float w = ConvertUnits.ToSimUnits(gameView.Width - 1);
+            float h = ConvertUnits.ToSimUnits(gameView.Height - 1);
+
+            Vertices borderVerts = new Vertices(4);
+            borderVerts.Add(new Vector2(0, 0));
+            borderVerts.Add(new Vector2(0, h));
+            borderVerts.Add(new Vector2(w, h));
+            borderVerts.Add(new Vector2(w, 0));
+
+            Body body = BodyFactory.CreateLoopShape(this.physics, borderVerts);
+            body.CollisionCategories = Category.All;
+            body.CollidesWith = Category.All;
+
+            Random randomizer = new Random(11041846 / DateTime.Now.Millisecond);
+
+            for (int i = 0; i < this.redCells.Length; i++)
+            {
+                this.redCells[i] = new DGRedCell(randomizer);
+                this.redCells[i].LoadContent(this.ScreenManager.Content, this.physics);
+            }
+
+            this.gameBackground.LoadContent(this.ScreenManager.Content);
+
+            if (this.longload)
+                Thread.Sleep(2000);
+
+            base.LoadContent();
+        }
+        public      override void   UnloadContent       ()
+        {
+            for (int i = 0; i < this.redCells.Length; i++)
+            {
+                this.redCells[i].UnloadContent();
+                this.redCells[i] = null;
+            }
+
+            base.UnloadContent();
         }
 
-        protected override void Initialize()
+        public      override void   Update              (GameTime gametime)
         {
-            base.Initialize();
+            base.Update(gametime);
 
-            this.MenuList.Add(menuplay);
-            this.MenuList.Add(menuexit);
-            this.MenuList.Add(menuhigh);
-            this.MenuList.Add(menusett);
+            this.physics.Step(Math.Min((float)gametime.ElapsedGameTime.TotalSeconds, 1 / 30f));
 
-            this.BackgroundList.Add(background);
+            foreach (DGRedCell cell in this.redCells)
+                cell.Update(gametime);
+
+            this.gameBackground.Update(gametime);
         }
+        public      override void   Render              (SpriteBatch batch)
+        {
+            this.gameBackground.Render(batch);
+
+            foreach (DGRedCell cell in this.redCells)
+                cell.Render(batch);
+
+            base.Render(batch);
+        }
+
+        protected   override void   OnCancel            ()
+        {
+            this.ScreenManager.AddScreen(new MenuQuit());
+        }
+        protected   override void   OnSelect            (int entryIndex)
+        {
+            try
+            {
+                base.OnSelect(entryIndex);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        #endregion
     }
 }

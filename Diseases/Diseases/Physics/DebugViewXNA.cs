@@ -20,6 +20,8 @@ using FarseerPhysics.Dynamics.Contacts;
 
 using FarseerPhysics;
 
+#if WINDOWS
+
 namespace Diseases.Physics
 {
     /// <summary>
@@ -880,3 +882,5 @@ namespace Diseases.Physics
         #endregion
     }
 }
+
+#endif

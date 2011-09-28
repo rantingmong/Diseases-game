@@ -37,9 +37,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\x86\Debug</OutputPath>
-    <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WINDOWS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>true</NoStdLib>
@@ -61,18 +61,9 @@
     <CodeAnalysisRuleSet>ExtendedCorrectnessRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.Xna.Framework.GamerServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
-      <Private>False</Private>
-    </Reference>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -87,6 +78,7 @@
     <Compile Include="Entity\DGWhtCell.cs" />
     <Compile Include="Entity\DGPlayer.cs" />
     <Compile Include="Entity\DGRedCell.cs" />
+    <Compile Include="Graphics\GaussianBlur.cs" />
     <Compile Include="Physics\ConvertUnits.cs" />
     <Compile Include="Physics\DebugViewXNA.cs" />
     <Compile Include="Physics\PrimitiveBatch.cs" />
@@ -104,10 +96,9 @@
     <Compile Include="Screen\Menu\Base\DGMenuScreen.cs" />
     <Compile Include="Screen\Menu\MenuOver.cs" />
     <Compile Include="Screen\Menu\MenuPaus.cs" />
-    <Compile Include="Screen\Menu\MenuSett.cs" />
-    <Compile Include="Screen\Menu\MenuExit.cs" />
     <Compile Include="Screen\Menu\MenuHigh.cs" />
     <Compile Include="Screen\Menu\MenuMain.cs" />
+    <Compile Include="Screen\Menu\MenuQuit.cs" />
     <Compile Include="Screen\Menu\MenuTutt.cs" />
     <Compile Include="Screen\Other\DGScreenLoad.cs" />
     <Compile Include="Util\OptionDataHandler.cs" />

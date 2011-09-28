@@ -12,8 +12,12 @@ using Diseases.Graphics;
 
 namespace Diseases.Screen.Menu
 {
-    public class MenuTutt
+    public class MenuTutt : DGMenuScreen
     {
+        public MenuTutt()
+            : base("tutorial")
+        {
 
+        }
     }
 }

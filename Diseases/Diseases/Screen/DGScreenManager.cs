@@ -64,7 +64,7 @@ namespace Diseases.Screen
             this.crashinput = new DGInputSequence(new Keys[] { Keys.LeftControl, Keys.F12 }, false, true);
             this.crashinput.inputname = "crashinput";
 
-            this.loadScreen = new DGScreenLoad(new DGSpriteStatic("backgrounds/load"));
+            this.loadScreen = new DGScreenLoad(new DGSpriteAnimat("backgrounds/load", 4, 4));
             this.loadScreen.ScreenManager = this;
 
             base.Initialize();
@@ -117,11 +117,9 @@ namespace Diseases.Screen
                     if (!this.inputhandled || screen.OverrideInput)
                     {
                         screen.Update(gameTime);
-
                         screen.HandleInput(gameTime, input);
 
-                        if (!screen.OverrideInput)
-                            this.inputhandled = true;
+                        this.inputhandled = true;
                     }
                 }
 
@@ -137,8 +135,6 @@ namespace Diseases.Screen
             if (!this.isloading)
             {
                 this.tempscreens.Clear();
-
-                Viewport vport = this.Game.GraphicsDevice.Viewport;
 
                 foreach (DGScreen screen in this.screens)
                     this.tempscreens.Add(screen);
@@ -170,7 +166,7 @@ namespace Diseases.Screen
             {
                 screen.ScreenManager = this;
 
-                if (this.isinitialized)
+                if (this.isinitialized && !screen.loaded)
                     screen.LoadContent();
 
                 this.screens.Add(screen);
@@ -206,7 +202,6 @@ namespace Diseases.Screen
                 {
                     Name            = "load thread",
                     IsBackground    = false
-
                 };
                 loadThread.Start();
             }
