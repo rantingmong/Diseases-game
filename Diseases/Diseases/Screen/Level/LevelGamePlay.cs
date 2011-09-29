@@ -26,7 +26,9 @@ namespace Diseases.Screen.Level
     {
         #region FIELDS
 
-        float                       readyTime = 0;
+        int                         score               = 0;
+
+        float                       readyTime           = 0;
         bool                        isPlaying;
 
         bool                        gameLost;
@@ -50,17 +52,28 @@ namespace Diseases.Screen.Level
         float                       whtElapsed          = 0;
         float                       powElapsed          = 0;
 
+        SpriteFont                  scoreFont;
+
         SpriteFont                  debugFont;
         DGSpriteStatic              gameBackground;
 
         bool                        physicsDebugShown   = false;
         DGInputAction               physicsInput;
 
+        bool                        backPlayed          = false;
+        Song                        backSong;
+
+        bool                        lowhPlayed          = true;
+        Song                        lowhSong;
+
         Song                        overSong;
         MenuOver                    overMenu;
 
         MenuPaus                    pausMenu;
         DGInputAction               pausInput;
+
+        DGSpriteStatic              hudSprite;
+        DGSpriteStatic              readySprite;
 
         #endregion
 
@@ -83,10 +96,20 @@ namespace Diseases.Screen.Level
 
         public      override void   LoadContent             ()
         {
+            this.scoreFont = this.ScreenManager.Content.Load<SpriteFont>("fonts/gamefont");
+
             this.debugFont = this.ScreenManager.Content.Load<SpriteFont>("fonts/debugfont");
             this.gameBackground.LoadContent(this.ScreenManager.Content);
 
             this.overSong = this.ScreenManager.Content.Load<Song>("sounds/music/failed");
+            this.backSong = this.ScreenManager.Content.Load<Song>("sounds/music/back");
+            this.lowhSong = this.ScreenManager.Content.Load<Song>("sounds/music/lowh");
+
+            this.hudSprite = new DGSpriteStatic("backgrounds/menu/ghud");
+            this.hudSprite.LoadContent(this.ScreenManager.Content);
+
+            this.readySprite = new DGSpriteStatic("backgrounds/menu/redy");
+            this.readySprite.LoadContent(this.ScreenManager.Content);
 
             this.gamePhysic = new World(Vector2.Zero);
             this.viewnDebug  = new DebugViewXNA(this.gamePhysic)
@@ -145,7 +168,7 @@ namespace Diseases.Screen.Level
 
         public      override void   HandleInput             (GameTime gametime, DGInput input)
         {
-            if (!this.player.Dead())
+            if (!this.player.Dead() && this.isPlaying)
             {
                 if (this.pausInput.Evaluate(input))
                 {
@@ -166,23 +189,53 @@ namespace Diseases.Screen.Level
 
         public      override void   Update                  (GameTime gametime)
         {
-            //if (!this.isPlaying)
-            //{
-            //    this.readyTime += (float)gametime.ElapsedGameTime.TotalSeconds;
+            if (!this.isPlaying)
+            {
+                this.readyTime += (float)gametime.ElapsedGameTime.TotalSeconds;
 
-            //    if (this.readyTime > 3)
-            //        this.isPlaying = true;
+                if (this.readyTime > 0)
+                    this.readySprite.Tint = Color.Red;
 
-            //    return;
-            //}
+                if (this.readyTime > 1)
+                    this.readySprite.Tint = Color.Orange;
+
+                if (this.readyTime > 2)
+                    this.readySprite.Tint = Color.LimeGreen;
+
+                if (this.readyTime > 3)
+                {
+                    this.isPlaying = true;
+                    this.readyTime = 0;
+                }
+
+                return;
+            }
 
             this.gameBackground.Update(gametime);
+
+            if (!this.backPlayed && this.player.WastedLife <= 6)
+            {
+                this.backPlayed = true;
+                this.lowhPlayed = false;
+
+                MediaPlayer.IsRepeating = true;
+                MediaPlayer.Play(this.backSong);
+            }
+
+            if (!this.lowhPlayed && this.player.WastedLife >= 7)
+            {
+                this.lowhPlayed = true;
+                this.backPlayed = false;
+
+                MediaPlayer.Play(this.lowhSong);
+            }
 
             if (this.player.Dead() && !this.gameLost)
             {
                 this.gameLost = true;
                 this.OverrideInput = true;
 
+                MediaPlayer.IsRepeating = false;
                 MediaPlayer.Play(this.overSong);
 
                 this.ScreenManager.AddScreen(this.overMenu);
@@ -191,6 +244,8 @@ namespace Diseases.Screen.Level
             lock (this.gamePhysic)
             {
                 this.gamePhysic.Step(Math.Min((float)gametime.ElapsedGameTime.TotalSeconds, 1 / 30f));
+
+                this.score += (int)(gametime.ElapsedGameTime.TotalMilliseconds * 0.25f);
 
                 this.UpdateEntityLifecycle(gametime);
                 this.CleanupEntities(gametime);
@@ -214,9 +269,19 @@ namespace Diseases.Screen.Level
             foreach (DGWhtCell cell in this.whtCells)
                 cell.Render(batch);
 
-            if (!this.player.Dead())
+            if (!this.player.Dead() && this.isPlaying)
+            {
                 this.player.Render(batch);
+                this.hudSprite.Render(batch);
 
+                batch.DrawString(this.scoreFont, this.score.ToString(), new Vector2(150, 10), Color.White);
+                batch.DrawString(this.scoreFont, (this.player.MaxLife - this.player.WastedLife).ToString(), new Vector2(700, 10), Color.White);
+            }
+
+            if (!this.isPlaying)
+            {
+                this.readySprite.Render(batch);
+            }
 #if DEBUG
 
             batch.End();

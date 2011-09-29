@@ -79,7 +79,8 @@ namespace Diseases.Graphics
         }
         public void         UnloadContent   ()
         {
-            this.texture.Dispose();
+            if (this.texture != null)
+                this.texture.Dispose();
         }
 
         public void         Update          (GameTime gametime)

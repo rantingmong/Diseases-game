@@ -49,7 +49,7 @@ namespace Diseases.Screen.Menu
             };
             this.scorEntry.Selected += (o, s) =>
             {
-
+                this.ScreenManager.AddScreen(new MenuHigh());
             };
             this.quitEntry.Selected += (o, s) =>
             {

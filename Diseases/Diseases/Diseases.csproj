@@ -101,8 +101,6 @@
     <Compile Include="Screen\Menu\MenuQuit.cs" />
     <Compile Include="Screen\Menu\MenuTutt.cs" />
     <Compile Include="Screen\Other\DGScreenLoad.cs" />
-    <Compile Include="Util\OptionDataHandler.cs" />
-    <Compile Include="Util\ScoresDataHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Farseer Physics\Farseer Physics XNA.csproj">

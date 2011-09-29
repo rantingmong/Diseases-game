@@ -16,6 +16,7 @@ using Diseases.Physics;
 using Diseases.Graphics;
 using Diseases.Screen.Level;
 using System.Threading;
+using Microsoft.Xna.Framework.Media;
 
 namespace Diseases.Screen.Menu
 {
@@ -24,6 +25,9 @@ namespace Diseases.Screen.Menu
         #region FIELDS
 
         bool                        longload            = false;
+
+        bool                        backPlayed          = false;
+        Song                        backSong;
 
         World                       physics             = new World(Vector2.Zero);
         DGRedCell[]                 redCells            = new DGRedCell[20];
@@ -77,16 +81,18 @@ namespace Diseases.Screen.Menu
             };
             this.scorEntry.Selected += (s, o) =>
             {
-
+                this.ScreenManager.AddScreen(new MenuHigh());
             };
             this.tuttEntry.Selected += (s, o) =>
             {
-
+                this.ScreenManager.AddScreen(new MenuTutt());
             };
         }
 
         public      override void   LoadContent         ()
         {
+            this.backSong = this.ScreenManager.Content.Load<Song>("sounds/music/main");
+
             Viewport gameView = this.ScreenManager.GraphicsDevice.Viewport;
 
             float w = ConvertUnits.ToSimUnits(gameView.Width - 1);
@@ -115,6 +121,8 @@ namespace Diseases.Screen.Menu
             if (this.longload)
                 Thread.Sleep(2000);
 
+            MediaPlayer.Volume = 0.5f;
+
             base.LoadContent();
         }
         public      override void   UnloadContent       ()
@@ -131,6 +139,14 @@ namespace Diseases.Screen.Menu
         public      override void   Update              (GameTime gametime)
         {
             base.Update(gametime);
+
+            if (!this.backPlayed)
+            {
+                this.backPlayed = true;
+
+                MediaPlayer.IsRepeating = true;
+                MediaPlayer.Play(this.backSong);
+            }
 
             this.physics.Step(Math.Min((float)gametime.ElapsedGameTime.TotalSeconds, 1 / 30f));
 

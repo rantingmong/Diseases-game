@@ -57,7 +57,7 @@ namespace Diseases
         {
             this.IsMouseVisible = true;
 
-            this.Window.Title = "Diseases - DEMO PURPOSES ONLY!";
+            //this.Window.Title = "Diseases - DEMO PURPOSES ONLY!";
 
             this.graphicsManager = new GraphicsDeviceManager(this);
 

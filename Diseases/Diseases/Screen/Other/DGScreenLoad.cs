@@ -46,7 +46,7 @@ namespace Diseases.Screen.Other
         public override void    Render          (SpriteBatch batch)
         {
             background.Render(batch);
-            backgroundOverlay.Render(batch);
+            //backgroundOverlay.Render(batch);
         }
     }
 }

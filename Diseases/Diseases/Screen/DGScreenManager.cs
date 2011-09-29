@@ -13,6 +13,7 @@ using Diseases.Input;
 using Diseases.Graphics;
 
 using Diseases.Screen.Other;
+using Microsoft.Xna.Framework.Media;
 
 namespace Diseases.Screen
 {
@@ -196,6 +197,9 @@ namespace Diseases.Screen
 
             if (this.isinitialized)
             {
+                MediaPlayer.Stop();
+                MediaPlayer.IsRepeating = false;
+
                 Debug.WriteLine("loading screen " + screen.ToString(), "INFO");
 
                 Thread loadThread = new Thread(screen.LoadContent)
