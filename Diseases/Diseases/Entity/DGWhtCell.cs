@@ -66,6 +66,10 @@ namespace Diseases.Entity
                 this.cooldownActive = true;
             }
         }
+        public      void            Faster      ()
+        {
+            this.speed += 1;
+        }
 
         void ConstrainPhysics()
         {

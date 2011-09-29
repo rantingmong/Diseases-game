@@ -144,8 +144,12 @@ namespace Diseases.Screen.Menu
             {
                 this.backPlayed = true;
 
-                MediaPlayer.IsRepeating = true;
-                MediaPlayer.Play(this.backSong);
+                Thread mThread = new Thread(new ThreadStart(() =>
+                {
+                    MediaPlayer.IsRepeating = true;
+                    MediaPlayer.Play(this.backSong);
+                }));
+                mThread.Start();
             }
 
             this.physics.Step(Math.Min((float)gametime.ElapsedGameTime.TotalSeconds, 1 / 30f));

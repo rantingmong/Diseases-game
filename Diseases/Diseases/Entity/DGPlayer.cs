@@ -25,9 +25,9 @@ namespace Diseases.Entity
 
         protected   override void   Initialize          ()
         {
-            this.restitution = 1.5f;
-            this.maxLife = 10;
-            this.speed = 3;
+            this.restitution = 0;
+            this.maxLife = 1;
+            this.speed = 6;
 
             this.sprite = new DGSpriteAnimat("entities/bacteria/idle", 12, 10);
         }
@@ -41,8 +41,8 @@ namespace Diseases.Entity
             this.physics.CollidesWith = Category.Cat1;
 
             fixture = new FixedMouseJoint(this.physics, ConvertUnits.ToSimUnits(new Vector2(50)));
-            fixture.MaxForce = 1000;
-
+            fixture.MaxForce = float.MaxValue;
+                
             physics.AddJoint(fixture);
         }
 
@@ -63,7 +63,7 @@ namespace Diseases.Entity
             if (this.wastedLife == 7)
             {
                 this.sprite.Tint = Color.Orange;
-                this.speed = 2;
+                this.speed = 6;
             }
 
             this.wastedLife = (int)MathHelper.Clamp(this.wastedLife, 0, 10);

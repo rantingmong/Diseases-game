@@ -60,6 +60,13 @@ Content\Sounds\Music\tutorial.xnb
 Content\Sounds\Music\back.xnb
 Content\Sounds\Music\main.xnb
 Content\Sounds\Music\lowh.xnb
+Content\Entities\menubuttons\tutt\back.xnb
+Content\Entities\menubuttons\tutt\back_selt.xnb
+Content\Entities\menubuttons\tutt\next.xnb
+Content\Entities\menubuttons\tutt\next_selt.xnb
+Content\Entities\tutt\slide1.xnb
+Content\Entities\tutt\slide2.xnb
+Content\Entities\tutt\slide3.xnb
 Content\Sounds\Music\crash.wma
 Content\Sounds\Music\failed.wma
 Content\Sounds\Music\tutorial.wma

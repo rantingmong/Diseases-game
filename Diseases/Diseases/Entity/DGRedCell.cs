@@ -70,20 +70,28 @@ namespace Diseases.Entity
         {
             base.Update(gametime);
 
-            if (this.cellInfected && this.wastedLife >= 1)
+            if (this.cellInfected)
                 this.cellLife += (float)gametime.ElapsedGameTime.TotalSeconds;
 
             this.ConstrainPhysics();
 
-            if (this.wastedLife == 1 || this.cellLife >= 10)
+            if (this.wastedLife == 1 || this.cellLife >= 2)
             {
+                if (this.cellLife < 2)
+                    this.cellLife = 2;
+
                 this.sprite.Tint = Color.Yellow;
             }
 
-            if (this.wastedLife == 2 || this.cellLife >= 15)
-                this.sprite.Tint = Color.LightGreen;
+            if (this.wastedLife == 2 || this.cellLife >= 4)
+            {
+                if (this.cellLife < 4)
+                    this.cellLife = 4;
 
-            if (this.cellLife >= 20)
+                this.sprite.Tint = Color.LightGreen;
+            }
+
+            if (this.wastedLife == 3 || this.cellLife >= 6)
                 this.dead = true;
         }
 
@@ -95,8 +103,6 @@ namespace Diseases.Entity
             this.infectedSprite.Offset      = this.sprite.Offset;
 
             this.sprite = this.infectedSprite;
-
-            this.speed = 3;
         }
         public      void            Damage          ()
         {

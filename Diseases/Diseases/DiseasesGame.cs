@@ -65,6 +65,17 @@ namespace Diseases
 
             this.graphicsManager.PreferredBackBufferWidth   = 800;
             this.graphicsManager.PreferredBackBufferHeight  = 540;
+
+            this.Activated += (o, s) =>
+            {
+                if (MediaPlayer.State == MediaState.Paused)
+                    MediaPlayer.Resume();
+            };
+            this.Deactivated += (o, s) =>
+            {
+                if (MediaPlayer.State == MediaState.Playing)
+                    MediaPlayer.Pause();
+            };
         }
 
         protected override void         Dispose         (bool disposing)

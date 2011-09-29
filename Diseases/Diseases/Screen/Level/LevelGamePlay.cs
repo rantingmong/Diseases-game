@@ -42,6 +42,9 @@ namespace Diseases.Screen.Level
 
         DGPlayer                    player;
 
+        bool                        bnuEnabled          = false;
+        float                       bnuElapsed          = 0;
+
         float                       totElapsed          = 0;
 
         List<DGRedCell>             redCells;
@@ -91,7 +94,11 @@ namespace Diseases.Screen.Level
             this.physicsInput = new DGInputAction(Keys.F1, true);
 
             this.pausMenu = new MenuPaus();
-            this.overMenu = new MenuOver();
+
+            this.pausMenu.MenuCanceled += (o, s) =>
+            {
+                MediaPlayer.Resume();
+            };
         }
 
         public      override void   LoadContent             ()
@@ -172,6 +179,8 @@ namespace Diseases.Screen.Level
             {
                 if (this.pausInput.Evaluate(input))
                 {
+                    MediaPlayer.Pause();
+
                     this.ScreenManager.AddScreen(this.pausMenu);
                     this.physicsDebugShown = false;
                 }
@@ -218,8 +227,12 @@ namespace Diseases.Screen.Level
                 this.backPlayed = true;
                 this.lowhPlayed = false;
 
-                MediaPlayer.IsRepeating = true;
-                MediaPlayer.Play(this.backSong);
+                Thread mThread = new Thread(new ThreadStart(() =>
+                {
+                    MediaPlayer.IsRepeating = true;
+                    MediaPlayer.Play(this.backSong);
+                }));
+                mThread.Start();
             }
 
             if (!this.lowhPlayed && this.player.WastedLife >= 7)
@@ -227,7 +240,8 @@ namespace Diseases.Screen.Level
                 this.lowhPlayed = true;
                 this.backPlayed = false;
 
-                MediaPlayer.Play(this.lowhSong);
+                Thread mThread = new Thread(new ThreadStart(() => { MediaPlayer.Play(this.lowhSong); }));
+                mThread.Start();
             }
 
             if (this.player.Dead() && !this.gameLost)
@@ -235,17 +249,18 @@ namespace Diseases.Screen.Level
                 this.gameLost = true;
                 this.OverrideInput = true;
 
-                MediaPlayer.IsRepeating = false;
-                MediaPlayer.Play(this.overSong);
-
-                this.ScreenManager.AddScreen(this.overMenu);
+                Thread mThread = new Thread(new ThreadStart(() =>
+                {
+                    MediaPlayer.IsRepeating = false;
+                    MediaPlayer.Play(this.overSong);
+                }));
+                mThread.Start();
+                this.ScreenManager.AddScreen(this.overMenu = new MenuOver(this.score));
             }
 
             lock (this.gamePhysic)
             {
                 this.gamePhysic.Step(Math.Min((float)gametime.ElapsedGameTime.TotalSeconds, 1 / 30f));
-
-                this.score += (int)(gametime.ElapsedGameTime.TotalMilliseconds * 0.25f);
 
                 this.UpdateEntityLifecycle(gametime);
                 this.CleanupEntities(gametime);
@@ -319,6 +334,15 @@ namespace Diseases.Screen.Level
             this.powElapsed += (float)gametime.ElapsedGameTime.TotalSeconds;
 
             this.totElapsed += (float)gametime.ElapsedGameTime.TotalSeconds;
+
+            if (this.bnuEnabled)
+                this.bnuElapsed += (float)gametime.ElapsedGameTime.TotalMilliseconds;
+
+            if (this.bnuElapsed > 1000)
+            {
+                this.bnuEnabled = false;
+                this.bnuElapsed = 0;
+            }
         }
         private     void            CleanupEntities         (GameTime gametime)
         {
@@ -405,10 +429,13 @@ namespace Diseases.Screen.Level
             }
         }
         private     void            UpdateEntities          (GameTime gametime)
-        {            
+        {   
             foreach (DGWhtCell cell in this.whtCells)
             {
                 cell.Update(gametime);
+
+                if (this.totElapsed > 20)
+                    cell.Faster();
 
                 if (cell.EntityBounds.Intersects(this.player.EntityBounds) && !this.player.Dead())
                 {
@@ -424,6 +451,24 @@ namespace Diseases.Screen.Level
                 if (cell.EntityBounds.Intersects(this.player.EntityBounds) && !cell.CellInfected && !this.player.Dead())
                 {
                     cell.Infect();
+
+                    if (this.bnuEnabled)
+                    {
+                        if (this.bnuElapsed < 500)
+                        {
+                            this.score += 500;
+                        }
+                        else if (this.bnuElapsed < 1000)
+                        {
+                            this.score += 100;
+                        }
+                    }
+                    else
+                    {
+                        this.score += 15;
+                    }
+
+                    this.bnuEnabled = true;
                 }
 
                 foreach (DGWhtCell wcell in this.whtCells)
@@ -446,6 +491,9 @@ namespace Diseases.Screen.Level
                     this.player.Healed();
                 }
             }
+
+            if (this.totElapsed > 20)
+                this.totElapsed = 0;
         }
 
         #endregion
