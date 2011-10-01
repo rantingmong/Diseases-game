@@ -26,7 +26,7 @@ namespace Diseases.Entity
         protected   override void   Initialize          ()
         {
             this.restitution = 0;
-            this.maxLife = 1;
+            this.maxLife = 10;
             this.speed = 6;
 
             this.sprite = new DGSpriteAnimat("entities/bacteria/idle", 12, 10);

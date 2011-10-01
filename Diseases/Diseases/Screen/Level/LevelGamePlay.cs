@@ -159,7 +159,7 @@ namespace Diseases.Screen.Level
                 this.player.EntityLocation = new Vector2(state.X, state.Y);
             }
 
-            Thread.Sleep(3000);
+            Thread.Sleep(2000);
 
             base.LoadContent();
         }
@@ -454,13 +454,17 @@ namespace Diseases.Screen.Level
 
                     if (this.bnuEnabled)
                     {
-                        if (this.bnuElapsed < 500)
+                        if (this.bnuElapsed < 60)
                         {
-                            this.score += 500;
+                            this.score += 250;
                         }
-                        else if (this.bnuElapsed < 1000)
+                        else if (this.bnuElapsed < 120)
                         {
                             this.score += 100;
+                        }
+                        else
+                        {
+                            this.score += 15;
                         }
                     }
                     else
